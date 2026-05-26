@@ -1,0 +1,263 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* Tell Tailwind 4 to scan the src tree — the Turbopack integration
+   sometimes misses JSX files without an explicit @source hint. */
+@source "../src/**/*.{ts,tsx}";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-warm: var(--warm);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --font-display: var(--font-display);
+  --font-heading: var(--font-display);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.5);
+  --radius-md: calc(var(--radius) * 0.75);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.5);
+  --radius-2xl: calc(var(--radius) * 2);
+  --radius-3xl: calc(var(--radius) * 3);
+  --radius-4xl: calc(var(--radius) * 4);
+}
+
+/*
+ * LIGHT mode. The site lives mostly in this palette — off-white base,
+ * near-black text, no accent color. Following Eight Sleep's restraint:
+ * the product imagery (when it arrives) is the color story. The
+ * single dark moment is the closing CTA + footer.
+ */
+:root {
+  /* Base — warm off-white. Pure white feels clinical; warm off-white
+   * gives the page a paper-like quality. */
+  --background: oklch(0.975 0.005 85);
+  --surface: oklch(1 0 0);
+
+  /* Warm cream used behind imagery placeholders (suggests soft light) */
+  --warm: oklch(0.95 0.025 75);
+
+  /* Near-black foreground — never pure #000 */
+  --foreground: oklch(0.18 0.005 85);
+
+  /* shadcn role tokens, dialed for the light palette */
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.18 0.005 85);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.18 0.005 85);
+
+  --primary: oklch(0.18 0.005 85);
+  --primary-foreground: oklch(0.98 0.005 85);
+  --secondary: oklch(0.94 0.005 85);
+  --secondary-foreground: oklch(0.18 0.005 85);
+
+  --muted: oklch(0.94 0.005 85);
+  --muted-foreground: oklch(0.45 0.005 85);
+  --accent: oklch(0.94 0.005 85);
+  --accent-foreground: oklch(0.18 0.005 85);
+
+  --destructive: oklch(0.55 0.2 25);
+
+  /* Hairline borders — black at very low alpha */
+  --border: oklch(0 0 0 / 8%);
+  --input: oklch(0 0 0 / 10%);
+  --ring: oklch(0 0 0 / 20%);
+
+  --chart-1: oklch(0.18 0.005 85);
+  --chart-2: oklch(0.35 0.005 85);
+  --chart-3: oklch(0.5 0.005 85);
+  --chart-4: oklch(0.65 0.005 85);
+  --chart-5: oklch(0.8 0.005 85);
+
+  --radius: 0.5rem;
+
+  --sidebar: oklch(0.975 0.005 85);
+  --sidebar-foreground: oklch(0.18 0.005 85);
+  --sidebar-primary: oklch(0.18 0.005 85);
+  --sidebar-primary-foreground: oklch(0.98 0.005 85);
+  --sidebar-accent: oklch(0.94 0.005 85);
+  --sidebar-accent-foreground: oklch(0.18 0.005 85);
+  --sidebar-border: oklch(0 0 0 / 8%);
+  --sidebar-ring: oklch(0 0 0 / 20%);
+}
+
+/*
+ * Dark scope — used by sections that opt into dark via className="dark"
+ * (the closing CTA + footer). Inverted palette, warmer than gray.
+ */
+.dark {
+  --background: oklch(0.13 0.005 85);
+  --surface: oklch(0.165 0.005 85);
+  --warm: oklch(0.2 0.015 75);
+  --foreground: oklch(0.97 0.005 85);
+
+  --card: oklch(0.165 0.005 85);
+  --card-foreground: oklch(0.97 0.005 85);
+  --popover: oklch(0.18 0.005 85);
+  --popover-foreground: oklch(0.97 0.005 85);
+
+  --primary: oklch(0.97 0.005 85);
+  --primary-foreground: oklch(0.13 0.005 85);
+  --secondary: oklch(0.22 0.005 85);
+  --secondary-foreground: oklch(0.97 0.005 85);
+
+  --muted: oklch(0.22 0.005 85);
+  --muted-foreground: oklch(0.65 0.005 85);
+  --accent: oklch(0.22 0.005 85);
+  --accent-foreground: oklch(0.97 0.005 85);
+
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 14%);
+  --ring: oklch(1 0 0 / 25%);
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  html {
+    @apply font-sans;
+  }
+  /*
+   * Display — editorial headlines. Fraunces variable serif tuned for
+   * large-scale display: optically large (opsz 144), medium softness,
+   * no wonk. Tighter than body tracking, near-unity line-height.
+   */
+  .display {
+    font-family: var(--font-display);
+    font-variation-settings: "opsz" 144, "SOFT" 40, "WONK" 0;
+    letter-spacing: -0.03em;
+    line-height: 0.93;
+    font-weight: 400;
+  }
+
+  /*
+   * Eyebrow — mono uppercase structural labels. Deliberately quiet:
+   * they orient the reader without competing with the headline.
+   */
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--muted-foreground);
+  }
+
+  /*
+   * Full-bleed edge-to-edge helper. Apply to break out of a padded
+   * container while keeping the element in document flow.
+   */
+  .bleed {
+    margin-left: calc(-1 * var(--page-inset, 1.5rem));
+    margin-right: calc(-1 * var(--page-inset, 1.5rem));
+  }
+}
+
+/*
+ * Explicit font-size scale. Tailwind 4 with Turbopack can fail to
+ * generate the larger text-* utilities when scanning TSX at build time.
+ * Defining them here ensures they are always present in the stylesheet.
+ */
+.text-base { font-size: 1rem; }
+.text-lg   { font-size: 1.125rem; }
+.text-xl   { font-size: 1.25rem; }
+.text-2xl  { font-size: 1.5rem; }
+.text-3xl  { font-size: 1.875rem; }
+.text-4xl  { font-size: 2.25rem; }
+.text-5xl  { font-size: 3rem; }
+.text-6xl  { font-size: 3.75rem; }
+.text-7xl  { font-size: 4.5rem; }
+.text-8xl  { font-size: 6rem; }
+.text-9xl  { font-size: 8rem; }
+
+@media (min-width: 640px) {
+  .sm\:text-xl   { font-size: 1.25rem; }
+  .sm\:text-2xl  { font-size: 1.5rem; }
+  .sm\:text-3xl  { font-size: 1.875rem; }
+  .sm\:text-4xl  { font-size: 2.25rem; }
+  .sm\:text-5xl  { font-size: 3rem; }
+  .sm\:text-6xl  { font-size: 3.75rem; }
+  .sm\:text-7xl  { font-size: 4.5rem; }
+  .sm\:text-8xl  { font-size: 6rem; }
+}
+
+@media (min-width: 1024px) {
+  .lg\:text-xl   { font-size: 1.25rem; }
+  .lg\:text-2xl  { font-size: 1.5rem; }
+  .lg\:text-3xl  { font-size: 1.875rem; }
+  .lg\:text-4xl  { font-size: 2.25rem; }
+  .lg\:text-5xl  { font-size: 3rem; }
+  .lg\:text-6xl  { font-size: 3.75rem; }
+  .lg\:text-7xl  { font-size: 4.5rem; }
+  .lg\:text-8xl  { font-size: 6rem; }
+  .lg\:text-9xl  { font-size: 8rem; }
+}
+
+/*
+ * Responsive split-panel grid utilities.
+ * Arbitrary Tailwind 4 values (e.g. grid-cols-[5fr_7fr]) are not
+ * generated by the Turbopack scanner, so we define them here.
+ */
+.product-split {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+.feature-split {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 1024px) {
+  .product-split {
+    grid-template-columns: 5fr 7fr;
+  }
+
+  .feature-split {
+    grid-template-columns: 55fr 45fr;
+  }
+}
