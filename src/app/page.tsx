@@ -1,34 +1,23 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Truck, ShieldCheck, Headphones } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
+import { HeroMirror } from "@/components/HeroMirror";
 import { cn } from "@/lib/utils";
 
 /* ─── data ──────────────────────────────────────────────────── */
 
-const trustSignals = [
-  {
-    Icon: Truck,
-    label: "Free shipping",
-    body: "Every mirror, every order. No exceptions.",
-  },
-  {
-    Icon: ShieldCheck,
-    label: "30-day trial",
-    body: "Bring it into the salon. If it isn't right, return it.",
-  },
-  {
-    Icon: Headphones,
-    label: "Lifetime support",
-    body: "Real humans who know the product. Same-day.",
-  },
+/* The house offer, set like the price list on a barbershop wall. */
+const houseMenu = [
+  { label: "Free shipping", value: "Every mirror, every order" },
+  { label: "30-day trial", value: "Bring it into the salon. Not right? Return it." },
+  { label: "Lifetime support", value: "Real humans who know the product, same-day" },
 ];
 
 const features = [
   {
-    id: "01",
-    eyebrow: "Vision",
+    station: "Vision",
     headline: "See it before\nyou cut it.",
     body: "Hold the vision before you touch the scissors. Live AR previews show cuts, colors, and styles on the client's actual face — in real time. When they see it, they trust it. When they trust it, they book again.",
     src: "/images/ar-styling.svg",
@@ -36,8 +25,7 @@ const features = [
     dark: true,
   },
   {
-    id: "02",
-    eyebrow: "Control",
+    station: "Control",
     headline: "Hands stay where\nthey belong.",
     body: "A wave changes the look. A pinch zooms in. You never break grip, never lose rhythm. LUX reads your movement from across the room — no screens to touch, no apps to navigate.",
     src: "/images/hands-gesture.svg",
@@ -45,8 +33,7 @@ const features = [
     dark: false,
   },
   {
-    id: "03",
-    eyebrow: "Fleet",
+    station: "Fleet",
     headline: "Every mirror.\nOne screen.",
     body: "New mirror paired in under a minute. Updates pushed from your phone. Every station visible, every issue surfaced. Whether it's one chair or fifty, you're always in control.",
     src: "/images/fleet-salon.svg",
@@ -60,6 +47,13 @@ const stats = [
   { value: "2.4×", label: "Color bookings" },
   { value: "92%", label: "Repeat-visit rate" },
   { value: "<1 min", label: "Setup time" },
+];
+
+const specs: [string, string][] = [
+  ["Display", "27″ 4K AMOLED"],
+  ["Bezel", "Matte aluminum"],
+  ["Sensing", "AR depth + IR"],
+  ["Power", "USB-C PD, 65W"],
 ];
 
 const testimonials = [
@@ -115,121 +109,93 @@ export default function Home() {
   return (
     <div className="flex flex-1 flex-col">
 
-      {/* ── HERO ─────────────────────────────────────────── */}
+      {/* ── HERO — the mirror wakes ──────────────────────── */}
       <section
-        className="dark relative flex flex-col overflow-hidden bg-background"
+        className="dark relative flex flex-col justify-center overflow-hidden bg-background"
         style={{ minHeight: "92vh" }}
       >
-        {/* Full-bleed background illustration */}
-        <div className="absolute inset-0">
-          <Image
-            src="/images/hero-salon.svg"
-            alt=""
-            fill
-            priority
-            className="object-cover object-center"
-            sizes="100vw"
-          />
-          {/* Left gradient — grounds the text without hiding the scene */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                "linear-gradient(105deg, oklch(0.13 0.005 85) 0%, oklch(0.13 0.005 85 / 0.8) 38%, transparent 68%)",
-            }}
-          />
-          {/* Bottom gradient — anchors copy to the bottom edge */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                "linear-gradient(to top, oklch(0.13 0.005 85) 0%, oklch(0.13 0.005 85 / 0.6) 20%, transparent 48%)",
-            }}
-          />
-        </div>
+        {/* Ambient shop light along the top edge */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(90% 55% at 50% -10%, oklch(0.3 0.04 72 / 0.55), transparent 62%)",
+          }}
+        />
 
-        {/* Copy — bottom-left, like Eight Sleep */}
-        <div className="relative z-10 mt-auto w-full">
-          <div className="mx-auto w-full max-w-7xl px-6 pb-16 sm:pb-24 lg:pb-28">
-            <div className="max-w-2xl">
-              <p
-                className="eyebrow mb-6"
-                style={{ color: "oklch(0.97 0.005 85 / 0.4)" }}
+        <div className="relative z-10 mx-auto grid w-full max-w-7xl items-center gap-14 px-6 py-24 lg:grid-cols-[7fr_5fr] lg:gap-8">
+          <div className="max-w-2xl">
+            <p
+              className="eyebrow mb-7"
+              style={{ color: "oklch(0.96 0.004 250 / 0.4)" }}
+            >
+              LUX · Now reserving
+            </p>
+
+            <h1
+              className="display text-foreground"
+              style={{ fontSize: "clamp(2.9rem, 6.6vw, 5.5rem)" }}
+            >
+              The mirror built
+              <br />
+              for the <em>chair.</em>
+            </h1>
+
+            <p
+              className="mt-7 text-base sm:text-lg"
+              style={{
+                color: "oklch(0.96 0.004 250 / 0.62)",
+                maxWidth: "34rem",
+                lineHeight: 1.65,
+              }}
+            >
+              AR styling. Gesture controls. Full fleet management.
+              One device, on the wall, working as hard as you do.
+            </p>
+
+            <div className="mt-9 flex flex-wrap items-center gap-4">
+              <Link
+                href="/shop"
+                className={cn(
+                  buttonVariants({ variant: "default", size: "lg" }),
+                  "h-12 rounded-full px-7 text-sm font-medium",
+                )}
               >
-                LUX · Now reserving
-              </p>
-
-              <h1
-                className="display text-foreground text-5xl sm:text-7xl lg:text-8xl"
-                style={{ lineHeight: 0.92 }}
+                Reserve a mirror
+                <ArrowUpRight className="ml-1.5 size-4" />
+              </Link>
+              <a
+                href="#the-mirror"
+                className="inline-flex h-12 items-center gap-1 text-sm font-medium underline-offset-4 transition-colors hover:underline"
+                style={{ color: "oklch(0.96 0.004 250 / 0.5)" }}
               >
-                The mirror built
-                <br />
-                for the chair.
-              </h1>
-
-              <p
-                className="mt-6 text-base sm:text-lg"
-                style={{
-                  color: "oklch(0.97 0.005 85 / 0.62)",
-                  maxWidth: "36rem",
-                  lineHeight: 1.65,
-                }}
-              >
-                AR styling. Gesture controls. Full fleet management.
-                One device, on the wall, working as hard as you do.
-              </p>
-
-              <div className="mt-8 flex flex-wrap items-center gap-4">
-                <Link
-                  href="/shop"
-                  className={cn(
-                    buttonVariants({ variant: "default", size: "lg" }),
-                    "h-12 rounded-full px-7 text-sm font-medium",
-                  )}
-                >
-                  Reserve a mirror
-                  <ArrowUpRight className="ml-1.5 size-4" />
-                </Link>
-                <Link
-                  href="/about"
-                  className="inline-flex h-12 items-center gap-1 text-sm font-medium underline-offset-4 transition-colors hover:underline"
-                  style={{ color: "oklch(0.97 0.005 85 / 0.5)" }}
-                >
-                  Watch the film
-                  <ArrowUpRight className="size-3.5" />
-                </Link>
-              </div>
-
-              <p
-                className="eyebrow mt-7"
-                style={{ color: "oklch(0.97 0.005 85 / 0.3)" }}
-              >
-                30-day trial · Free shipping · Ships Q4 2026
-              </p>
+                See it wake
+                <ArrowUpRight className="size-3.5" />
+              </a>
             </div>
+
+            <p
+              className="eyebrow mt-8"
+              style={{ color: "oklch(0.96 0.004 250 / 0.3)" }}
+            >
+              30-day trial · Free shipping · Ships Q4 2026
+            </p>
           </div>
+
+          <HeroMirror />
         </div>
       </section>
 
-      {/* ── TRUST STRIP ──────────────────────────────────── */}
+      {/* ── THE HOUSE MENU — trust, set like the wall card ── */}
       <section className="border-b border-border bg-surface">
-        <div className="mx-auto w-full max-w-7xl px-6">
-          <ul className="grid divide-border sm:grid-cols-3 sm:divide-x">
-            {trustSignals.map(({ Icon, label, body }) => (
-              <li
-                key={label}
-                className="flex items-start gap-4 px-2 py-10 sm:px-10 sm:py-12"
-              >
-                <Icon className="mt-0.5 size-5 shrink-0 text-foreground/60" />
-                <div className="flex flex-col gap-1">
-                  <p className="text-sm font-semibold tracking-tight">
-                    {label}
-                  </p>
-                  <p className="text-sm leading-relaxed text-muted-foreground">
-                    {body}
-                  </p>
-                </div>
+        <div className="mx-auto w-full max-w-4xl px-6 py-14 sm:py-16">
+          <ul className="flex flex-col gap-5">
+            {houseMenu.map(({ label, value }) => (
+              <li key={label} className="menu-row">
+                <span className="menu-label">{label}</span>
+                <span className="menu-dots" aria-hidden />
+                <span className="menu-value">{value}</span>
               </li>
             ))}
           </ul>
@@ -237,7 +203,7 @@ export default function Home() {
       </section>
 
       {/* ── PRODUCT CALLOUT ──────────────────────────────── */}
-      <section className="border-b border-border">
+      <section id="the-mirror" className="border-b border-border">
         <div className="product-split mx-auto w-full max-w-7xl items-stretch gap-0">
           {/* Mirror image panel */}
           <div className="relative" style={{ minHeight: "520px" }}>
@@ -256,7 +222,9 @@ export default function Home() {
 
             <h2 className="display text-4xl sm:text-5xl lg:text-6xl">
               One mirror.{" "}
-              <span className="text-muted-foreground">Built to disappear.</span>
+              <span className="text-muted-foreground">
+                Built to <em>disappear.</em>
+              </span>
             </h2>
 
             <p
@@ -268,21 +236,16 @@ export default function Home() {
               Matte aluminum bezel. Hangs on the wall or stands on the floor.
             </p>
 
-            <dl className="grid max-w-xs grid-cols-2 gap-y-6 border-t border-border pt-8">
-              {(
-                [
-                  ["Display", "27″ 4K AMOLED"],
-                  ["Bezel", "Matte aluminum"],
-                  ["Sensing", "AR depth + IR"],
-                  ["Power", "USB-C PD, 65W"],
-                ] as [string, string][]
-              ).map(([dt, dd]) => (
-                <div key={dt} className="flex flex-col gap-1">
-                  <dt className="eyebrow">{dt}</dt>
-                  <dd className="text-sm font-semibold">{dd}</dd>
-                </div>
+            {/* Spec sheet as menu card */}
+            <ul className="flex max-w-sm flex-col gap-4 border-t border-border pt-8">
+              {specs.map(([label, value]) => (
+                <li key={label} className="menu-row">
+                  <span className="menu-label">{label}</span>
+                  <span className="menu-dots" aria-hidden />
+                  <span className="menu-value">{value}</span>
+                </li>
               ))}
-            </dl>
+            </ul>
 
             <Link
               href="/shop"
@@ -298,12 +261,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── FEATURE MOMENTS ──────────────────────────────── */}
+      {/* ── FEATURE STATIONS ─────────────────────────────── */}
       {features.map((feature, idx) => {
         const imageLeft = idx % 2 === 0;
         return (
           <section
-            key={feature.id}
+            key={feature.station}
             className={cn(
               "border-b border-border overflow-hidden",
               feature.dark ? "dark bg-background" : "bg-surface",
@@ -334,13 +297,13 @@ export default function Home() {
                   !imageLeft && "lg:order-1",
                 )}
               >
-                <div className="flex items-baseline gap-3">
-                  <span className="eyebrow">{feature.id}</span>
-                  <span className="eyebrow">{feature.eyebrow}</span>
-                </div>
+                <p className="eyebrow">{feature.station}</p>
 
+                {/* text-foreground is required: dark sections re-scope the
+                    CSS var, but the inherited color was computed at body
+                    level in light mode. */}
                 <h2
-                  className="display text-4xl sm:text-5xl lg:text-6xl"
+                  className="display text-foreground text-4xl sm:text-5xl lg:text-6xl"
                   style={{ whiteSpace: "pre-line" }}
                 >
                   {feature.headline}
@@ -401,7 +364,10 @@ export default function Home() {
             ))}
           </dl>
 
-          <p className="mt-10 text-xs leading-relaxed text-muted-foreground" style={{ maxWidth: "32rem" }}>
+          <p
+            className="mt-10 text-xs leading-relaxed text-muted-foreground"
+            style={{ maxWidth: "32rem" }}
+          >
             From early pilot salons. Independent third-party study landing Q3 2026.
           </p>
         </div>
@@ -428,7 +394,12 @@ export default function Home() {
               >
                 <blockquote
                   className="display leading-snug"
-                  style={{ fontSize: "clamp(1.1rem, 1.8vw, 1.5rem)" }}
+                  style={{
+                    fontSize: "clamp(1.1rem, 1.8vw, 1.5rem)",
+                    /* Small didone settings need the text-optical cut,
+                       not the razor display one. */
+                    fontVariationSettings: '"opsz" 24',
+                  }}
                 >
                   &ldquo;{t.quote}&rdquo;
                 </blockquote>
@@ -474,18 +445,27 @@ export default function Home() {
 
       {/* ── FINAL CTA ────────────────────────────────────── */}
       <section className="dark relative overflow-hidden bg-background">
-        <div className="mx-auto grid w-full max-w-7xl gap-12 px-6 py-36 sm:py-52 lg:grid-cols-12 lg:items-end">
+        {/* The device's light, one last time */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(60% 70% at 82% 100%, oklch(0.585 0.23 285 / 0.16), transparent 70%)",
+          }}
+        />
+        <div className="relative mx-auto grid w-full max-w-7xl gap-12 px-6 py-36 sm:py-48 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-7">
             <p
               className="eyebrow mb-7"
-              style={{ color: "oklch(0.97 0.005 85 / 0.35)" }}
+              style={{ color: "oklch(0.96 0.004 250 / 0.35)" }}
             >
               Now reserving
             </p>
             <h2 className="display text-foreground text-5xl sm:text-7xl lg:text-8xl">
               Your salon,
               <br />
-              <span className="text-muted-foreground">transformed.</span>
+              <em className="text-muted-foreground">transformed.</em>
             </h2>
           </div>
           <div className="flex flex-col gap-5 lg:col-span-5 lg:items-end">
@@ -503,17 +483,6 @@ export default function Home() {
               Ships Q4 2026 · Risk-free 30-day trial.
             </p>
           </div>
-        </div>
-
-        {/* Signature oversized wordmark */}
-        <div className="overflow-hidden">
-          <p
-            aria-hidden
-            className="display select-none leading-[0.85] text-foreground/10"
-            style={{ fontSize: "28vw", letterSpacing: "-0.05em" }}
-          >
-            LUX
-          </p>
         </div>
       </section>
     </div>

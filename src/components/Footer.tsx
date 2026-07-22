@@ -58,13 +58,21 @@ export function Footer() {
           ))}
         </div>
 
-        {/* Oversized wordmark — the signature element. On the dark
-         * footer it reads as luxurious negative-space typography. */}
-        <div className="mt-24 overflow-hidden">
+        {/* Oversized wordmark with its own reflection — the brand as
+         * seen in the glass. The reversed ghost sits behind the mark,
+         * barely there, the way type reads in a mirror. */}
+        <div className="relative mt-24 overflow-hidden">
           <p
             aria-hidden
-            className="display select-none text-[28vw] leading-[0.85] text-foreground/15"
-            style={{ letterSpacing: "-0.05em" }}
+            className="display pointer-events-none absolute inset-0 select-none text-[28vw] leading-[0.85] text-foreground/[0.04]"
+            style={{ letterSpacing: "-0.02em", transform: "scaleX(-1)" }}
+          >
+            LUX
+          </p>
+          <p
+            aria-hidden
+            className="display relative select-none text-[28vw] leading-[0.85] text-foreground/15"
+            style={{ letterSpacing: "-0.02em" }}
           >
             LUX
           </p>

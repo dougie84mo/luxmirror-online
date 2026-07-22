@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Fraunces } from "next/font/google";
+import { Geist, Geist_Mono, Bodoni_Moda } from "next/font/google";
 import "./globals.css";
 
 import { Header } from "@/components/Header";
@@ -15,10 +15,17 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const fraunces = Fraunces({
+/*
+ * Display face: Bodoni Moda — a fashion-editorial didone. The salon
+ * world is adjacent to style press (the page cites Vogue, Allure);
+ * the razor-thin hairline contrast suits a brand built around blades
+ * and glass. Variable optical size keeps small settings readable.
+ */
+const bodoni = Bodoni_Moda({
   variable: "--font-display",
   subsets: ["latin"],
-  axes: ["opsz", "SOFT", "WONK"],
+  style: ["normal", "italic"],
+  axes: ["opsz"],
 });
 
 export const metadata: Metadata = {
@@ -38,7 +45,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${bodoni.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <Header />
