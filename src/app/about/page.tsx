@@ -14,24 +14,25 @@ export const metadata: Metadata = {
 
 /* ─── data ──────────────────────────────────────────────────── */
 
+/* House rules — labeled by what each one protects, not a number. */
 const principles = [
   {
-    id: "01",
+    label: "Durability",
     title: "The chair is the office.",
     body: "We build for the salon environment first — humidity, motion, repetition, light. If it doesn't survive a Saturday rush, it doesn't ship.",
   },
   {
-    id: "02",
+    label: "Silence",
     title: "Disappear when idle.",
     body: "A mirror should be a mirror until you ask it to be something else. No screensavers, no notifications, no noise. Wake on intent. Sleep on exit.",
   },
   {
-    id: "03",
+    label: "Craft",
     title: "Hands stay on the client.",
     body: "Every interaction is designed around the working stylist. Gestures, not menus. Glances, not screens. Craft, not configuration.",
   },
   {
-    id: "04",
+    label: "Ownership",
     title: "The data is yours.",
     body: "Client previews never leave the salon network without consent. Aggregated insights belong to the business that earned them.",
   },
@@ -102,12 +103,14 @@ export default function AboutPage() {
         <div className="mx-auto w-full max-w-7xl px-6 pt-20 pb-16 sm:pt-28 sm:pb-24">
           <p className="eyebrow mb-6">About · LUX</p>
           <h1
-            className="display text-5xl sm:text-7xl lg:text-8xl"
-            style={{ maxWidth: "18ch" }}
+            className="display"
+            style={{ fontSize: "clamp(2.6rem, 6vw, 5rem)", maxWidth: "18ch" }}
           >
             We&rsquo;re reimagining
             <br />
-            <span className="text-muted-foreground">the chair.</span>
+            <span className="text-muted-foreground">
+              the <em>chair.</em>
+            </span>
           </h1>
           <p
             className="mt-7 text-base sm:text-lg leading-relaxed text-muted-foreground"
@@ -158,7 +161,7 @@ export default function AboutPage() {
       <section className="border-b border-border">
         <div className="mx-auto w-full max-w-7xl px-6 py-24 sm:py-32">
           <div className="mb-14 max-w-2xl">
-            <p className="eyebrow mb-5">Principles</p>
+            <p className="eyebrow mb-5">House rules</p>
             <h2 className="display text-4xl sm:text-5xl lg:text-6xl">
               What we believe.
             </h2>
@@ -167,10 +170,10 @@ export default function AboutPage() {
           <ul className="grid gap-px overflow-hidden rounded-2xl bg-border sm:grid-cols-2">
             {principles.map((p) => (
               <li
-                key={p.id}
+                key={p.label}
                 className="flex flex-col gap-5 bg-surface p-8 sm:p-10"
               >
-                <span className="eyebrow">{p.id}</span>
+                <span className="eyebrow">{p.label}</span>
                 <h3 className="display text-2xl sm:text-3xl">{p.title}</h3>
                 <p className="text-base leading-relaxed text-muted-foreground">
                   {p.body}
@@ -281,18 +284,28 @@ export default function AboutPage() {
 
       {/* ── CTA ──────────────────────────────────────────── */}
       <section className="dark relative overflow-hidden bg-background">
-        <div className="mx-auto grid w-full max-w-7xl gap-12 px-6 py-32 sm:py-44 lg:grid-cols-12 lg:items-end">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(60% 70% at 82% 100%, oklch(0.585 0.23 285 / 0.16), transparent 70%)",
+          }}
+        />
+        <div className="relative mx-auto grid w-full max-w-7xl gap-12 px-6 py-32 sm:py-44 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-7">
             <p
               className="eyebrow mb-7"
-              style={{ color: "oklch(0.97 0.005 85 / 0.35)" }}
+              style={{ color: "oklch(0.96 0.004 250 / 0.35)" }}
             >
               Now reserving
             </p>
-            <h2 className="display text-foreground text-5xl sm:text-7xl lg:text-8xl">
+            <h2 className="display text-foreground text-5xl sm:text-6xl lg:text-7xl">
               See what we built.
               <br />
-              <span className="text-muted-foreground">In your salon.</span>
+              <span className="text-muted-foreground">
+                In your <em>salon.</em>
+              </span>
             </h2>
           </div>
           <div className="flex flex-col gap-5 lg:col-span-5 lg:items-end">

@@ -1,14 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowUpRight,
-  Truck,
-  ShieldCheck,
-  Wrench,
-  PackageCheck,
-  CircleHelp,
-} from "lucide-react";
+import { ArrowUpRight, CircleHelp } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -31,12 +24,12 @@ const variants = [
     cadence: "one-time · per mirror",
     src: "/images/product-mirror.svg",
     alt: "LUX 27 — chair-side smart mirror",
-    highlights: [
-      "27″ 4K AMOLED",
-      "Matte aluminum bezel",
-      "Wall or floor mount",
-      "AR + IR depth sensing",
-    ],
+    menu: [
+      ["Display", "27″ 4K AMOLED"],
+      ["Bezel", "Matte aluminum"],
+      ["Mount", "Wall or floor"],
+      ["Sensing", "AR + IR depth"],
+    ] as [string, string][],
   },
   {
     id: "lux-full",
@@ -48,36 +41,21 @@ const variants = [
     cadence: "one-time · per mirror",
     src: "/images/product-mirror.svg",
     alt: "LUX Full-Length — full-length smart mirror",
-    highlights: [
-      "55″ 4K AMOLED",
-      "Floor-standing",
-      "Wide-angle AR capture",
-      "Premium tempered glass",
-    ],
+    menu: [
+      ["Display", "55″ 4K AMOLED"],
+      ["Stance", "Floor-standing"],
+      ["Capture", "Wide-angle AR"],
+      ["Glass", "Premium tempered"],
+    ] as [string, string][],
   },
 ];
 
-const includes = [
-  {
-    Icon: PackageCheck,
-    label: "Mirror + bezel",
-    body: "Pre-calibrated. Boots into mirror mode on first power.",
-  },
-  {
-    Icon: Wrench,
-    label: "Mounting kit",
-    body: "Wall plate, anchors, level. Floor stand on the Full-Length.",
-  },
-  {
-    Icon: Truck,
-    label: "Free shipping",
-    body: "Insured, white-glove delivery. Tracking from dispatch.",
-  },
-  {
-    Icon: ShieldCheck,
-    label: "1-year warranty",
-    body: "Hardware coverage. Extendable with the LUX Care plan.",
-  },
+/* What ships with every mirror — set like the card on the wall. */
+const includes: [string, string][] = [
+  ["Mirror + bezel", "Pre-calibrated. Boots into mirror mode on first power."],
+  ["Mounting kit", "Wall plate, anchors, level. Floor stand on the Full-Length."],
+  ["Free shipping", "Insured, white-glove delivery. Tracking from dispatch."],
+  ["1-year warranty", "Hardware coverage. Extendable with LUX Care."],
 ];
 
 const specs: [string, string][] = [
@@ -98,7 +76,7 @@ const addOns = [
     price: "$12 / month",
   },
   {
-    name: "Wall mount — articulating",
+    name: "Articulating wall mount",
     blurb: "Tilt and swing arm for tight stations.",
     price: "$180",
   },
@@ -138,11 +116,13 @@ export default function ShopPage() {
         <div className="mx-auto w-full max-w-7xl px-6 pt-20 pb-16 sm:pt-28 sm:pb-24">
           <p className="eyebrow mb-6">Shop · Now reserving</p>
           <h1
-            className="display text-5xl sm:text-7xl lg:text-8xl"
-            style={{ maxWidth: "20ch" }}
+            className="display"
+            style={{ fontSize: "clamp(2.6rem, 6vw, 5rem)", maxWidth: "20ch" }}
           >
             One mirror.{" "}
-            <span className="text-muted-foreground">Every chair.</span>
+            <span className="text-muted-foreground">
+              Every <em>chair.</em>
+            </span>
           </h1>
           <p
             className="mt-7 text-base sm:text-lg leading-relaxed text-muted-foreground"
@@ -221,17 +201,13 @@ export default function ShopPage() {
                     {v.blurb}
                   </p>
 
-                  <ul className="grid grid-cols-2 gap-x-6 gap-y-3 border-t border-border pt-6 text-sm">
-                    {v.highlights.map((h) => (
-                      <li
-                        key={h}
-                        className="flex items-start gap-2 text-foreground/80"
-                      >
-                        <span
-                          aria-hidden
-                          className="mt-2 size-1 shrink-0 rounded-full bg-foreground/40"
-                        />
-                        {h}
+                  {/* Each format gets its own wall-menu card */}
+                  <ul className="flex flex-col gap-4 border-t border-border pt-6">
+                    {v.menu.map(([label, value]) => (
+                      <li key={label} className="menu-row">
+                        <span className="menu-label">{label}</span>
+                        <span className="menu-dots" aria-hidden />
+                        <span className="menu-value">{value}</span>
                       </li>
                     ))}
                   </ul>
@@ -255,10 +231,10 @@ export default function ShopPage() {
 
       {/* ── WHAT'S INCLUDED ──────────────────────────────── */}
       <section className="border-b border-border">
-        <div className="mx-auto w-full max-w-7xl px-6 py-24 sm:py-32">
-          <div className="mb-14 max-w-2xl">
+        <div className="mx-auto grid w-full max-w-7xl gap-16 px-6 py-24 sm:py-32 lg:grid-cols-12">
+          <div className="lg:col-span-5">
             <p className="eyebrow mb-5">In the box</p>
-            <h2 className="display text-4xl sm:text-5xl lg:text-6xl">
+            <h2 className="display text-4xl sm:text-5xl">
               Everything you need.{" "}
               <span className="text-muted-foreground">
                 Nothing you don&rsquo;t.
@@ -266,14 +242,14 @@ export default function ShopPage() {
             </h2>
           </div>
 
-          <ul className="grid divide-border sm:grid-cols-2 sm:divide-x lg:grid-cols-4">
-            {includes.map(({ Icon, label, body }) => (
-              <li
-                key={label}
-                className="flex flex-col gap-3 px-2 py-8 sm:px-8 sm:py-10"
-              >
-                <Icon className="size-5 text-foreground/60" />
-                <p className="text-sm font-semibold tracking-tight">{label}</p>
+          <ul className="flex flex-col gap-6 lg:col-span-7 lg:pt-2">
+            {includes.map(([label, body]) => (
+              <li key={label} className="flex flex-col gap-2">
+                <div className="menu-row">
+                  <span className="menu-label">{label}</span>
+                  <span className="menu-dots" aria-hidden />
+                  <span className="menu-value">Included</span>
+                </div>
                 <p className="text-sm leading-relaxed text-muted-foreground">
                   {body}
                 </p>
@@ -290,7 +266,9 @@ export default function ShopPage() {
             <p className="eyebrow mb-5">Specs</p>
             <h2 className="display text-4xl sm:text-5xl">
               Built to last.{" "}
-              <span className="text-muted-foreground">Designed to vanish.</span>
+              <span className="text-muted-foreground">
+                Designed to <em>vanish.</em>
+              </span>
             </h2>
             <p
               className="mt-7 text-base leading-relaxed text-muted-foreground"
@@ -301,17 +279,15 @@ export default function ShopPage() {
             </p>
           </div>
 
-          <dl className="lg:col-span-7">
-            {specs.map(([dt, dd]) => (
-              <div
-                key={dt}
-                className="grid grid-cols-3 gap-6 border-t border-border py-5 last:border-b"
-              >
-                <dt className="eyebrow col-span-1">{dt}</dt>
-                <dd className="col-span-2 text-sm font-medium">{dd}</dd>
-              </div>
+          <ul className="flex flex-col gap-5 lg:col-span-7 lg:pt-2">
+            {specs.map(([label, value]) => (
+              <li key={label} className="menu-row">
+                <span className="menu-label">{label}</span>
+                <span className="menu-dots" aria-hidden />
+                <span className="menu-value">{value}</span>
+              </li>
             ))}
-          </dl>
+          </ul>
         </div>
       </section>
 
@@ -325,21 +301,20 @@ export default function ShopPage() {
             </h2>
           </div>
 
-          <ul className="grid gap-px overflow-hidden rounded-2xl bg-border sm:grid-cols-3">
+          {/* The add-on card is a literal price list — set it like one. */}
+          <ul className="max-w-3xl">
             {addOns.map((a) => (
               <li
                 key={a.name}
-                className="flex flex-col gap-4 bg-surface p-8 sm:p-10"
+                className="flex flex-col gap-2 border-t border-border py-6 last:border-b"
               >
-                <p className="text-sm font-semibold tracking-tight">{a.name}</p>
-                <p
-                  className="text-sm leading-relaxed text-muted-foreground"
-                  style={{ flex: 1 }}
-                >
+                <div className="menu-row">
+                  <span className="menu-label">{a.name}</span>
+                  <span className="menu-dots" aria-hidden />
+                  <span className="menu-value">{a.price}</span>
+                </div>
+                <p className="text-sm leading-relaxed text-muted-foreground">
                   {a.blurb}
-                </p>
-                <p className="text-sm font-mono text-foreground/80">
-                  {a.price}
                 </p>
               </li>
             ))}
@@ -390,18 +365,29 @@ export default function ShopPage() {
         id="reserve"
         className="dark relative overflow-hidden bg-background"
       >
-        <div className="mx-auto grid w-full max-w-7xl gap-12 px-6 py-32 sm:py-44 lg:grid-cols-12 lg:items-end">
+        {/* The device's light, waiting at the bottom of the glass */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(60% 70% at 82% 100%, oklch(0.585 0.23 285 / 0.16), transparent 70%)",
+          }}
+        />
+        <div className="relative mx-auto grid w-full max-w-7xl gap-12 px-6 py-32 sm:py-44 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-7">
             <p
               className="eyebrow mb-7"
-              style={{ color: "oklch(0.97 0.005 85 / 0.35)" }}
+              style={{ color: "oklch(0.96 0.004 250 / 0.35)" }}
             >
               Now reserving
             </p>
-            <h2 className="display text-foreground text-5xl sm:text-7xl lg:text-8xl">
+            <h2 className="display text-foreground text-5xl sm:text-6xl lg:text-7xl">
               Hold your mirror.
               <br />
-              <span className="text-muted-foreground">Pay when it ships.</span>
+              <span className="text-muted-foreground">
+                Pay when it <em>ships.</em>
+              </span>
             </h2>
           </div>
           <div className="flex flex-col gap-5 lg:col-span-5 lg:items-end">

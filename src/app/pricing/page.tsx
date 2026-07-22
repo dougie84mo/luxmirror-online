@@ -248,13 +248,13 @@ export default function PricingPage() {
         <div className="mx-auto w-full max-w-7xl px-6 pt-20 pb-16 sm:pt-28 sm:pb-24">
           <p className="eyebrow mb-6">Pricing</p>
           <h1
-            className="display text-5xl sm:text-7xl lg:text-8xl"
-            style={{ maxWidth: "20ch" }}
+            className="display"
+            style={{ fontSize: "clamp(2.6rem, 6vw, 5rem)", maxWidth: "20ch" }}
           >
             Buy the mirror.
             <br />
             <span className="text-muted-foreground">
-              Subscribe to the cloud.
+              Subscribe to the <em>cloud.</em>
             </span>
           </h1>
           <p
@@ -266,20 +266,17 @@ export default function PricingPage() {
             management, and updates.
           </p>
 
-          <ul className="mt-12 grid gap-px overflow-hidden rounded-2xl bg-border sm:grid-cols-2">
-            <li className="flex flex-col gap-2 bg-surface p-6 sm:p-8">
-              <p className="eyebrow">01 · Hardware</p>
-              <p className="text-base text-foreground/85">
-                Pay once per mirror. From{" "}
-                <span className="font-semibold">$2,400</span>.
-              </p>
+          {/* The whole offer on one wall card */}
+          <ul className="mt-12 flex max-w-xl flex-col gap-5">
+            <li className="menu-row">
+              <span className="menu-label">Hardware</span>
+              <span className="menu-dots" aria-hidden />
+              <span className="menu-value">from $2,400 · once, per mirror</span>
             </li>
-            <li className="flex flex-col gap-2 bg-surface p-6 sm:p-8">
-              <p className="eyebrow">02 · LUX cloud</p>
-              <p className="text-base text-foreground/85">
-                Monthly, per mirror. From{" "}
-                <span className="font-semibold">$29 / month</span>.
-              </p>
+            <li className="menu-row">
+              <span className="menu-label">LUX cloud</span>
+              <span className="menu-dots" aria-hidden />
+              <span className="menu-value">from $29 / month, per mirror</span>
             </li>
           </ul>
         </div>
@@ -289,10 +286,12 @@ export default function PricingPage() {
       <section className="border-b border-border">
         <div className="mx-auto w-full max-w-7xl px-6 py-24 sm:py-32">
           <div className="mb-14 max-w-2xl">
-            <p className="eyebrow mb-5">01 · Hardware</p>
+            <p className="eyebrow mb-5">Hardware</p>
             <h2 className="display text-4xl sm:text-5xl lg:text-6xl">
               The mirror.{" "}
-              <span className="text-muted-foreground">Bought once.</span>
+              <span className="text-muted-foreground">
+                Bought <em>once.</em>
+              </span>
             </h2>
             <p
               className="mt-6 text-base leading-relaxed text-muted-foreground"
@@ -365,10 +364,12 @@ export default function PricingPage() {
       <section className="border-b border-border bg-surface">
         <div className="mx-auto w-full max-w-7xl px-6 py-24 sm:py-32">
           <div className="mb-14 max-w-2xl">
-            <p className="eyebrow mb-5">02 · LUX cloud</p>
+            <p className="eyebrow mb-5">LUX cloud</p>
             <h2 className="display text-4xl sm:text-5xl lg:text-6xl">
               The software.{" "}
-              <span className="text-muted-foreground">Monthly per mirror.</span>
+              <span className="text-muted-foreground">
+                Monthly, per <em>mirror.</em>
+              </span>
             </h2>
           </div>
 
@@ -377,27 +378,43 @@ export default function PricingPage() {
               <article
                 key={plan.id}
                 className={cn(
-                  "flex flex-col gap-7 rounded-2xl p-8 sm:p-10",
+                  "relative flex flex-col gap-7 overflow-hidden rounded-2xl p-8 sm:p-10",
                   plan.featured
                     ? "dark bg-background text-foreground ring-1 ring-foreground/15"
                     : "bg-card ring-1 ring-border",
                 )}
               >
-                <div className="flex items-center justify-between">
+                {/* The featured card is smoked glass — the device's
+                    violet light rises from its base, like the mirror's. */}
+                {plan.featured && (
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-x-0 bottom-0"
+                    style={{
+                      height: "45%",
+                      background:
+                        "radial-gradient(80% 90% at 50% 110%, oklch(0.585 0.23 285 / 0.28), transparent 74%)",
+                    }}
+                  />
+                )}
+
+                <div className="relative flex items-center justify-between">
                   <p className="eyebrow">{plan.eyebrow}</p>
                   {plan.featured && (
                     <span
                       className="font-mono text-[0.6875rem] uppercase tracking-[0.2em]"
-                      style={{ color: "oklch(0.97 0.005 85 / 0.5)" }}
+                      style={{ color: "oklch(0.96 0.004 250 / 0.5)" }}
                     >
                       Most popular
                     </span>
                   )}
                 </div>
 
-                <h2 className="display text-4xl sm:text-5xl">{plan.name}</h2>
+                <h2 className="display relative text-4xl sm:text-5xl">
+                  {plan.name}
+                </h2>
 
-                <div className="flex items-baseline gap-2">
+                <div className="relative flex items-baseline gap-2">
                   <p className="display text-4xl sm:text-5xl">{plan.price}</p>
                   <p className="text-sm text-muted-foreground">
                     {plan.cadence}
@@ -405,7 +422,7 @@ export default function PricingPage() {
                 </div>
 
                 <p
-                  className="text-base leading-relaxed text-muted-foreground"
+                  className="relative text-base leading-relaxed text-muted-foreground"
                   style={{ minHeight: "3.25rem" }}
                 >
                   {plan.blurb}
@@ -418,14 +435,14 @@ export default function PricingPage() {
                       variant: plan.featured ? "default" : "outline",
                       size: "lg",
                     }),
-                    "h-12 w-full rounded-full px-6 text-sm font-medium",
+                    "relative h-12 w-full rounded-full px-6 text-sm font-medium",
                   )}
                 >
                   {plan.cta}
                   <ArrowUpRight className="ml-1.5 size-4" />
                 </Link>
 
-                <ul className="mt-2 flex flex-col gap-3 border-t border-border pt-6 text-sm">
+                <ul className="relative mt-2 flex flex-col gap-3 border-t border-border pt-6 text-sm">
                   {plan.highlights.map((h) => (
                     <li key={h} className="flex items-start gap-3">
                       <Check className="mt-0.5 size-4 shrink-0" />
@@ -549,18 +566,28 @@ export default function PricingPage() {
 
       {/* ── CTA ──────────────────────────────────────────── */}
       <section className="dark relative overflow-hidden bg-background">
-        <div className="mx-auto grid w-full max-w-7xl gap-12 px-6 py-32 sm:py-44 lg:grid-cols-12 lg:items-end">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(60% 70% at 82% 100%, oklch(0.585 0.23 285 / 0.16), transparent 70%)",
+          }}
+        />
+        <div className="relative mx-auto grid w-full max-w-7xl gap-12 px-6 py-32 sm:py-44 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-7">
             <p
               className="eyebrow mb-7"
-              style={{ color: "oklch(0.97 0.005 85 / 0.35)" }}
+              style={{ color: "oklch(0.96 0.004 250 / 0.35)" }}
             >
               Start free
             </p>
-            <h2 className="display text-foreground text-5xl sm:text-7xl lg:text-8xl">
+            <h2 className="display text-foreground text-5xl sm:text-6xl lg:text-7xl">
               Try LUX for 14 days.
               <br />
-              <span className="text-muted-foreground">No card required.</span>
+              <span className="text-muted-foreground">
+                No card <em>required.</em>
+              </span>
             </h2>
           </div>
           <div className="flex flex-col gap-5 lg:col-span-5 lg:items-end">
