@@ -1,4 +1,6 @@
+import { Fragment } from "react";
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Check, Minus, CircleHelp } from "lucide-react";
 
@@ -31,7 +33,7 @@ const plans: Plan[] = [
     id: "starter",
     name: "Starter",
     eyebrow: "Single chair",
-    price: "$49",
+    price: "$29",
     cadence: "per mirror / month",
     blurb:
       "Everything one chair needs: AR styling, gesture control, cloud backup.",
@@ -48,7 +50,7 @@ const plans: Plan[] = [
     id: "pro",
     name: "Pro",
     eyebrow: "Growing salons",
-    price: "$39",
+    price: "$59",
     cadence: "per mirror / month",
     blurb:
       "Fleet management, team roles, integrations. Scales as you add chairs.",
@@ -78,6 +80,37 @@ const plans: Plan[] = [
       "SSO + audit logs",
       "Dedicated success manager",
     ],
+  },
+];
+
+type Hardware = {
+  id: string;
+  name: string;
+  eyebrow: string;
+  blurb: string;
+  price: string;
+  cadence: string;
+  src: string;
+};
+
+const hardware: Hardware[] = [
+  {
+    id: "lux-27",
+    name: "LUX 27",
+    eyebrow: "Chair-side",
+    blurb: "27″ 4K AMOLED behind half-silvered glass. Wall or floor mount.",
+    price: "$2,400",
+    cadence: "one-time · per mirror",
+    src: "/images/product-mirror.svg",
+  },
+  {
+    id: "lux-full",
+    name: "LUX Full-Length",
+    eyebrow: "Full-length",
+    blurb: "55″ 4K AMOLED for color stations and consultation areas.",
+    price: "$3,200",
+    cadence: "one-time · per mirror",
+    src: "/images/product-mirror.svg",
   },
 ];
 
@@ -165,8 +198,12 @@ const compareGroups: { title: string; rows: CompareRow[] }[] = [
 
 const faqs = [
   {
-    q: "Does pricing include the hardware?",
-    a: "No. Mirrors are sold one-time on the Shop page. The plan covers the LUX cloud — AR styling, fleet management, integrations, support.",
+    q: "Why are there two prices?",
+    a: "The mirror is a one-time hardware purchase. The LUX cloud — AR styling, fleet management, integrations, updates — is a monthly subscription per mirror. You need both to run the product.",
+  },
+  {
+    q: "Why is Pro more per mirror than Starter?",
+    a: "Pro unlocks the fleet dashboard, team roles, booking/POS integrations, and priority support. Starter is a single chair on a single account — Pro is what scales a real salon.",
   },
   {
     q: "Can I switch plans later?",
@@ -209,21 +246,117 @@ export default function PricingPage() {
       {/* ── HERO ─────────────────────────────────────────── */}
       <section className="border-b border-border">
         <div className="mx-auto w-full max-w-7xl px-6 pt-20 pb-16 sm:pt-28 sm:pb-24">
-          <p className="eyebrow mb-6">Pricing · LUX cloud</p>
+          <p className="eyebrow mb-6">Pricing</p>
           <h1
             className="display text-5xl sm:text-7xl lg:text-8xl"
             style={{ maxWidth: "20ch" }}
           >
-            Built for every chair.
+            Buy the mirror.
             <br />
-            <span className="text-muted-foreground">Priced per mirror.</span>
+            <span className="text-muted-foreground">
+              Subscribe to the cloud.
+            </span>
           </h1>
           <p
             className="mt-7 text-base sm:text-lg leading-relaxed text-muted-foreground"
             style={{ maxWidth: "36rem" }}
           >
-            Hardware is sold once. The cloud — AR styling, fleet management,
-            updates — is a monthly subscription. Cancel anytime.
+            Two costs to plan for: a one-time hardware purchase per mirror,
+            and a monthly cloud subscription that powers AR styling, fleet
+            management, and updates.
+          </p>
+
+          <ul className="mt-12 grid gap-px overflow-hidden rounded-2xl bg-border sm:grid-cols-2">
+            <li className="flex flex-col gap-2 bg-surface p-6 sm:p-8">
+              <p className="eyebrow">01 · Hardware</p>
+              <p className="text-base text-foreground/85">
+                Pay once per mirror. From{" "}
+                <span className="font-semibold">$2,400</span>.
+              </p>
+            </li>
+            <li className="flex flex-col gap-2 bg-surface p-6 sm:p-8">
+              <p className="eyebrow">02 · LUX cloud</p>
+              <p className="text-base text-foreground/85">
+                Monthly, per mirror. From{" "}
+                <span className="font-semibold">$29 / month</span>.
+              </p>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      {/* ── HARDWARE ─────────────────────────────────────── */}
+      <section className="border-b border-border">
+        <div className="mx-auto w-full max-w-7xl px-6 py-24 sm:py-32">
+          <div className="mb-14 max-w-2xl">
+            <p className="eyebrow mb-5">01 · Hardware</p>
+            <h2 className="display text-4xl sm:text-5xl lg:text-6xl">
+              The mirror.{" "}
+              <span className="text-muted-foreground">Bought once.</span>
+            </h2>
+            <p
+              className="mt-6 text-base leading-relaxed text-muted-foreground"
+              style={{ maxWidth: "32rem" }}
+            >
+              Two formats, both ship pre-calibrated with the mounting kit and
+              a one-year hardware warranty. Free shipping, 30-day trial.
+            </p>
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-2">
+            {hardware.map((h) => (
+              <article
+                key={h.id}
+                className="flex flex-col overflow-hidden rounded-2xl bg-card ring-1 ring-border"
+              >
+                <div className="relative" style={{ minHeight: "320px" }}>
+                  <Image
+                    src={h.src}
+                    alt={h.name}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                  />
+                </div>
+                <div className="flex flex-col gap-5 p-8 sm:p-10">
+                  <div className="flex items-center justify-between gap-4">
+                    <p className="eyebrow">{h.eyebrow}</p>
+                    <p className="text-sm font-mono text-muted-foreground">
+                      {h.cadence}
+                    </p>
+                  </div>
+                  <div className="flex items-baseline justify-between gap-4">
+                    <h3 className="display text-3xl sm:text-4xl">{h.name}</h3>
+                    <p className="display text-3xl sm:text-4xl">{h.price}</p>
+                  </div>
+                  <p
+                    className="text-base leading-relaxed text-muted-foreground"
+                    style={{ maxWidth: "32rem" }}
+                  >
+                    {h.blurb}
+                  </p>
+                  <Link
+                    href="/shop"
+                    className={cn(
+                      buttonVariants({ variant: "outline", size: "lg" }),
+                      "mt-2 h-12 w-fit rounded-full px-6 text-sm font-medium",
+                    )}
+                  >
+                    View in shop
+                    <ArrowUpRight className="ml-1.5 size-4" />
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <p className="mt-8 text-xs leading-relaxed text-muted-foreground">
+            Volume discounts available on orders of 6+ mirrors. Financing
+            through Stripe Capital.{" "}
+            <Link href="/contact" className="underline-offset-4 hover:underline">
+              Talk to sales
+            </Link>
+            .
           </p>
         </div>
       </section>
@@ -231,6 +364,14 @@ export default function PricingPage() {
       {/* ── PLAN CARDS ───────────────────────────────────── */}
       <section className="border-b border-border bg-surface">
         <div className="mx-auto w-full max-w-7xl px-6 py-24 sm:py-32">
+          <div className="mb-14 max-w-2xl">
+            <p className="eyebrow mb-5">02 · LUX cloud</p>
+            <h2 className="display text-4xl sm:text-5xl lg:text-6xl">
+              The software.{" "}
+              <span className="text-muted-foreground">Monthly per mirror.</span>
+            </h2>
+          </div>
+
           <div className="grid gap-6 lg:grid-cols-3">
             {plans.map((plan) => (
               <article
@@ -332,8 +473,8 @@ export default function PricingPage() {
               </thead>
               <tbody>
                 {compareGroups.map((group) => (
-                  <>
-                    <tr key={`${group.title}-head`} className="bg-surface">
+                  <Fragment key={group.title}>
+                    <tr className="bg-surface">
                       <td
                         colSpan={4}
                         className="border-y border-border py-3 pr-6"
@@ -360,7 +501,7 @@ export default function PricingPage() {
                         </td>
                       </tr>
                     ))}
-                  </>
+                  </Fragment>
                 ))}
               </tbody>
             </table>
