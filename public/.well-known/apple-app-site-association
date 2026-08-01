@@ -2,7 +2,7 @@
   "applinks": {
     "details": [
       {
-        "appIDs": ["APPLE_TEAM_ID.com.theluxmirror.booking"],
+        "appIDs": ["C939424G5D.com.theluxmirror.booking"],
         "components": [{ "/": "/book/*" }]
       }
     ]
