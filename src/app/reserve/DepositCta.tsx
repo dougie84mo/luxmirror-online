@@ -13,9 +13,9 @@ export function DepositCta({ reservationId }: { reservationId: string }) {
     <div className="mt-8 border-t pt-8">
       <p className="eyebrow mb-3">Optional · Priority</p>
       <p className="max-w-prose text-sm text-muted-foreground">
-        Put down <span className="font-medium text-foreground">$199</span> to
-        secure priority in the Q4 run. Every dollar is applied to your mirror
-        at dispatch — it&rsquo;s a head start, not a fee.
+        Put down <span className="font-medium text-foreground">$199</span>{" "}
+        to secure priority in the Q4 run. Every dollar is applied to your
+        mirror at dispatch — it&rsquo;s a head start, not a fee.
       </p>
       {error && (
         <p role="alert" className="mt-3 text-sm text-destructive">
