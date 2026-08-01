@@ -55,7 +55,8 @@ export default async function ReservePage({
         </ul>
       </header>
 
-      <div className="lg:col-span-7 lg:pt-2">
+      <div className="relative lg:col-span-7 lg:pt-2">
+        <div aria-hidden className="wall-glow" />
         <ReserveForm defaultModel={defaultModel} />
       </div>
     </div>
@@ -69,7 +70,8 @@ function DepositReturn({ kind }: { kind: "success" | "cancelled" }) {
   const success = kind === "success";
   return (
     <div className="mx-auto w-full max-w-2xl px-6 py-24 sm:py-32">
-      <div className="rounded-2xl border bg-surface p-8 sm:p-10">
+      <div className="relative rounded-2xl border bg-surface p-8 sm:p-10">
+        <div aria-hidden className="wall-glow" />
         <p className="eyebrow mb-5">
           {success ? "Deposit received" : "Checkout closed"}
         </p>

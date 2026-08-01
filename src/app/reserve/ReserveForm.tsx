@@ -47,7 +47,13 @@ export function ReserveForm({ defaultModel }: { defaultModel: MirrorModelId }) {
   if (state.status === "success") {
     return (
       <div className="rounded-2xl border bg-surface p-8 sm:p-10">
-        <p className="eyebrow mb-5">Reservation received</p>
+        <div className="mb-5 flex items-center justify-between gap-4">
+          <p className="eyebrow">Reservation received</p>
+          <span className="lux-chip">
+            <span aria-hidden className="lux-chip-dot" />
+            Q4 2026 run
+          </span>
+        </div>
         <h2 className="display text-3xl sm:text-4xl">
           Your mirror is <em>held.</em>
         </h2>

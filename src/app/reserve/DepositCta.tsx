@@ -26,7 +26,7 @@ export function DepositCta({ reservationId }: { reservationId: string }) {
         <Button
           size="lg"
           disabled={pending}
-          className="h-12 rounded-full px-7 text-sm font-medium"
+          className="btn-violet h-12 rounded-full px-7 text-sm font-medium"
           onClick={() =>
             startTransition(async () => {
               const res = await startDepositCheckout(reservationId);

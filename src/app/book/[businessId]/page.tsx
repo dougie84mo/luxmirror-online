@@ -110,7 +110,7 @@ function AppCta({
   return (
     <a
       href={deepLink}
-      className={cn(buttonVariants({ size: "lg" }), "px-6", className)}
+      className={cn(buttonVariants({ size: "lg" }), "btn-violet px-6", className)}
     >
       Open in the LUX Booking app
     </a>
@@ -202,7 +202,8 @@ export default async function BookPage({
   return (
     <div className="mx-auto w-full max-w-2xl px-6 pt-14 pb-28 sm:pt-20 sm:pb-20">
       {/* ─── The shop ─────────────────────────────────────────── */}
-      <header>
+      <header className="relative">
+        <div aria-hidden className="wall-glow" />
         <div className="flex items-start justify-between gap-6">
           <div>
             <p className="eyebrow mb-4">
@@ -243,11 +244,8 @@ export default async function BookPage({
 
         <div className="mt-8 flex flex-wrap items-center gap-4">
           <AppCta deepLink={deepLink} className="max-sm:hidden" />
-          <span className="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 font-mono text-[0.625rem] tracking-[0.16em] uppercase">
-            <span
-              aria-hidden
-              className="size-1.5 rounded-full bg-glow shadow-[0_0_6px_var(--glow)]"
-            />
+          <span className="lux-chip">
+            <span aria-hidden className="lux-chip-dot" />
             LUX Booking
           </span>
         </div>

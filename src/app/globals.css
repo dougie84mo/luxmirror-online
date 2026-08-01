@@ -164,6 +164,23 @@
   to   { transform: translateX(-50%); }
 }
 
+/*
+ * Violet CTA — the device's light where the user's focus lives.
+ * Deliberately UNLAYERED so it outranks the utility-layer bg-primary that
+ * shadcn's Button/buttonVariants apply to the same element.
+ */
+.btn-violet {
+  background: var(--glow);
+  color: oklch(0.985 0.005 285);
+  box-shadow: 0 0 24px oklch(0.585 0.23 285 / 0.35);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-violet:hover {
+  background: var(--glow-soft);
+  box-shadow: 0 0 32px oklch(0.585 0.23 285 / 0.45);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -265,6 +282,43 @@
     background: color-mix(in oklab, var(--background) 92%, transparent);
     backdrop-filter: blur(8px);
     border-top: 1px solid var(--border);
+  }
+
+  /*
+   * Ambient tungsten wall-wash for form/detail pages — the shop's light
+   * spilling onto the wall behind the content. Parent needs `relative`.
+   */
+  .wall-glow {
+    position: absolute;
+    inset: -3rem;
+    z-index: -1;
+    background:
+      radial-gradient(55% 45% at 50% 30%, color-mix(in oklab, var(--warm) 75%, transparent), transparent 72%),
+      radial-gradient(36% 28% at 50% 40%, oklch(0.5 0.16 288 / 0.08), transparent 72%);
+    filter: blur(10px);
+    pointer-events: none;
+  }
+
+  /* LUX status chip — glow-dot pill, as used on /book. */
+  .lux-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 9999px;
+    padding: 0.375rem 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .lux-chip .lux-chip-dot {
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 9999px;
+    background: var(--glow);
+    box-shadow: 0 0 6px var(--glow);
   }
 }
 
