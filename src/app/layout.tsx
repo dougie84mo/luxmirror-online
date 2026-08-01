@@ -29,12 +29,19 @@ const bodoni = Bodoni_Moda({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://theluxmirror.com",
+  ),
   title: {
     default: "LUX Mirror — Smart mirrors for modern salons",
     template: "%s · LUX Mirror",
   },
   description:
     "The LUX Smart Mirror brings AR styling, gesture controls, and fleet management to barbers and stylists.",
+  openGraph: {
+    siteName: "LUX Mirror",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
