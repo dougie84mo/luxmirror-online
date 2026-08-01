@@ -251,6 +251,21 @@
     margin-left: calc(-1 * var(--page-inset, 1.5rem));
     margin-right: calc(-1 * var(--page-inset, 1.5rem));
   }
+
+  /*
+   * Mobile action dock — pins a page's single primary action above the
+   * thumb (used by /book). Safe-area aware for notched phones.
+   */
+  .cta-dock {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 40;
+    padding: 0.75rem 1.5rem max(0.75rem, env(safe-area-inset-bottom));
+    background: color-mix(in oklab, var(--background) 92%, transparent);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid var(--border);
+  }
 }
 
 /*

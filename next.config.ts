@@ -13,6 +13,16 @@ const nextConfig: NextConfig = {
     contentSecurityPolicy:
       "default-src 'self'; script-src 'none'; sandbox;",
   },
+  async headers() {
+    return [
+      {
+        // Apple fetches this without an extension and requires JSON
+        // content-type with no redirect for Universal Links to verify.
+        source: "/.well-known/apple-app-site-association",
+        headers: [{ key: "Content-Type", value: "application/json" }],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

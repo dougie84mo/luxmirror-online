@@ -213,7 +213,7 @@ export default function ShopPage() {
                   </ul>
 
                   <Link
-                    href="#reserve"
+                    href={`/reserve?model=${v.id}`}
                     className={cn(
                       buttonVariants({ variant: "default", size: "lg" }),
                       "mt-2 h-12 w-fit rounded-full px-7 text-sm font-medium",
@@ -392,7 +392,7 @@ export default function ShopPage() {
           </div>
           <div className="flex flex-col gap-5 lg:col-span-5 lg:items-end">
             <Link
-              href="#"
+              href="/reserve"
               className={cn(
                 buttonVariants({ variant: "default", size: "lg" }),
                 "h-12 w-fit rounded-full px-7 text-sm font-medium",
