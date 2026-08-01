@@ -13,7 +13,7 @@ const footerLinks = [
     title: "Support",
     links: [
       { href: "/contact", label: "Contact" },
-      { href: "/help", label: "Help" },
+      { href: "/faq", label: "FAQ" },
       { href: "/status", label: "Status" },
     ],
   },
