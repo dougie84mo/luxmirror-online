@@ -5,7 +5,7 @@
       "namespace": "android_app",
       "package_name": "com.theluxmirror.booking",
       "sha256_cert_fingerprints": [
-        "REPLACE_WITH_ANDROID_SIGNING_CERT_SHA256"
+        "51:AB:87:E3:44:1D:F7:7B:FA:6A:7D:C3:14:3D:79:5E:97:21:CE:22:B9:51:31:2E:25:C3:55:F8:62:1E:12:7B"
       ]
     }
   }
