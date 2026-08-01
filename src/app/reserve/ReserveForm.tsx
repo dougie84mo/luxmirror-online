@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { submitReservation, type ReserveState } from "./actions";
+import { DepositCta } from "./DepositCta";
 import { MIRROR_MODELS, type MirrorModelId } from "./models";
 
 const initialState: ReserveState = { status: "idle" };
@@ -66,6 +67,9 @@ export function ReserveForm({ defaultModel }: { defaultModel: MirrorModelId }) {
             </li>
           ))}
         </ul>
+        {state.reservationId && (
+          <DepositCta reservationId={state.reservationId} />
+        )}
       </div>
     );
   }

@@ -1,6 +1,9 @@
 "use server";
 
-import { rpc } from "@/lib/booking";
+import { redirect } from "next/navigation";
+
+import { isUuid, rpcScalar } from "@/lib/booking";
+import { createDepositCheckoutSession } from "@/lib/stripe";
 import { isMirrorModel } from "./models";
 
 /*
@@ -13,6 +16,7 @@ import { isMirrorModel } from "./models";
 export type ReserveState = {
   status: "idle" | "success" | "error";
   message?: string;
+  reservationId?: string;
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -48,8 +52,9 @@ export async function submitReservation(
     return { status: "error", message: "Quantity must be between 1 and 100." };
   }
 
+  let reservationId: string;
   try {
-    await rpc<string>("submit_mirror_reservation", {
+    reservationId = await rpcScalar<string>("submit_mirror_reservation", {
       p_contact_name: name,
       p_email: email,
       p_phone: phone || null,
@@ -67,5 +72,29 @@ export async function submitReservation(
     };
   }
 
-  return { status: "success" };
+  return { status: "success", reservationId };
+}
+
+/*
+ * Starts Stripe Checkout for the $199 deposit (applied to purchase).
+ * The session carries the reservation id in metadata; the stripe-webhook
+ * Edge Function stamps deposit_status='paid' — this server never writes
+ * the DB. Worst case for a forged id: someone pays $199 toward another
+ * reservation.
+ */
+export async function startDepositCheckout(
+  reservationId: string,
+): Promise<{ error: string } | void> {
+  if (!isUuid(reservationId)) return { error: "Invalid reservation." };
+  let url: string;
+  try {
+    url = await createDepositCheckoutSession(reservationId);
+  } catch (err) {
+    console.error("startDepositCheckout failed", err);
+    return {
+      error:
+        "We couldn't open checkout. Your reservation is still held — try again in a minute.",
+    };
+  }
+  redirect(url);
 }

@@ -12,7 +12,11 @@ export const metadata: Metadata = {
 export default async function ReservePage({
   searchParams,
 }: PageProps<"/reserve">) {
-  const { model } = await searchParams;
+  const { model, deposit } = await searchParams;
+  const depositState = Array.isArray(deposit) ? deposit[0] : deposit;
+  if (depositState === "success" || depositState === "cancelled") {
+    return <DepositReturn kind={depositState} />;
+  }
   const raw = Array.isArray(model) ? model[0] : model;
   const defaultModel: MirrorModelId =
     raw && isMirrorModel(raw) ? raw : "lux-27";
@@ -53,6 +57,38 @@ export default async function ReservePage({
 
       <div className="lg:col-span-7 lg:pt-2">
         <ReserveForm defaultModel={defaultModel} />
+      </div>
+    </div>
+  );
+}
+
+/* Landing states for the Stripe Checkout round-trip. The reservation was
+ * already created before checkout opened, so neither state re-renders the
+ * form — that would invite duplicate submissions. */
+function DepositReturn({ kind }: { kind: "success" | "cancelled" }) {
+  const success = kind === "success";
+  return (
+    <div className="mx-auto w-full max-w-2xl px-6 py-24 sm:py-32">
+      <div className="rounded-2xl border bg-surface p-8 sm:p-10">
+        <p className="eyebrow mb-5">
+          {success ? "Deposit received" : "Checkout closed"}
+        </p>
+        <h1 className="display text-3xl sm:text-4xl">
+          {success ? (
+            <>
+              Your spot is <em>secured.</em>
+            </>
+          ) : (
+            <>
+              Your mirror is still <em>held.</em>
+            </>
+          )}
+        </h1>
+        <p className="mt-4 max-w-prose text-muted-foreground">
+          {success
+            ? "Your $199 deposit is on file and will be applied to your mirror at dispatch. We'll confirm everything by email before your unit ships."
+            : "No charge was made. Your reservation stands as-is — we'll reach out by email, and you can add a deposit any time before dispatch."}
+        </p>
       </div>
     </div>
   );

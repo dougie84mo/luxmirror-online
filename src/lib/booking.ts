@@ -103,6 +103,34 @@ export async function rpc<T>(
   return (await res.json()) as T[];
 }
 
+/*
+ * For RPCs that return a scalar (e.g. submit_* functions returning uuid):
+ * PostgREST responds with a bare JSON value, not an array.
+ */
+export async function rpcScalar<T>(
+  fn: string,
+  args: Record<string, unknown>,
+): Promise<T> {
+  if (!SUPABASE_URL || !ANON_KEY) {
+    throw new Error(
+      "Missing NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    );
+  }
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`, {
+    method: "POST",
+    headers: {
+      apikey: ANON_KEY,
+      Authorization: `Bearer ${ANON_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(args),
+  });
+  if (!res.ok) {
+    throw new Error(`RPC ${fn} failed: ${res.status} ${await res.text()}`);
+  }
+  return (await res.json()) as T;
+}
+
 /* cache() dedupes across generateMetadata + the page render */
 export const getBusinessPublic = cache(
   async (businessId: string): Promise<BusinessHeader | null> => {
