@@ -169,6 +169,126 @@ function BookingPhone() {
   );
 }
 
+/* ─── store links ───────────────────────────────────────────── */
+
+/*
+ * Set a URL here and its badge becomes a live link; leave it null and the
+ * badge renders as "Coming soon". Verified 2026-08-02: neither app is
+ * published — play.google.com 404s for both package ids and there is no
+ * App Store listing — so shipping real-looking buttons would send people to
+ * a dead end.
+ *
+ *   Play:      https://play.google.com/store/apps/details?id=<package>
+ *   App Store: https://apps.apple.com/app/id<numeric app id from App Store Connect>
+ */
+const STORE_LINKS: Record<
+  "business" | "booking",
+  { ios: string | null; android: string | null }
+> = {
+  business: { ios: null, android: null }, // com.theluxmirror.app
+  booking: { ios: null, android: null }, // com.theluxmirror.booking
+};
+
+function AppleMark() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden className="size-5 shrink-0" fill="currentColor">
+      <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.53 4.08zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
+    </svg>
+  );
+}
+
+function PlayMark() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden className="size-5 shrink-0" fill="currentColor">
+      <path d="M3.6 2.1C3.24 2.33 3 2.74 3 3.27v17.46c0 .53.24.94.6 1.17l9.2-9.9L3.6 2.1zm10.7 8.63 2.9-3.12-9.9-5.55a1.3 1.3 0 0 0-.55-.16l7.55 8.83zm0 2.54-7.55 8.83c.19-.02.38-.07.55-.16l9.9-5.55-2.9-3.12zm3.98-4.28-2.2 2.37-2.13 2.65 2.13 2.64 2.2 2.37 2.6-1.46c.55-.31.92-.85.92-1.49v-4.13c0-.64-.37-1.18-.92-1.49l-2.6-1.46z" />
+    </svg>
+  );
+}
+
+function StoreButton({
+  href,
+  icon,
+  label,
+  sub,
+}: {
+  href: string | null;
+  icon: React.ReactNode;
+  label: string;
+  sub: string;
+}) {
+  const inner = (
+    <>
+      {icon}
+      <span className="flex flex-col items-start leading-tight">
+        <span className="font-mono text-[0.6rem] uppercase tracking-[0.16em] opacity-70">
+          {href ? sub : "Coming soon"}
+        </span>
+        <span className="text-sm font-medium">{label}</span>
+      </span>
+    </>
+  );
+
+  const shape =
+    "inline-flex items-center gap-3 rounded-xl border px-4 py-2.5 transition-colors";
+
+  // Unpublished apps get a real disabled control, not a link to nowhere —
+  // aria-disabled keeps it announced correctly to screen readers.
+  return href ? (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={cn(shape, "border-border bg-foreground text-background hover:opacity-90")}
+    >
+      {inner}
+    </a>
+  ) : (
+    <span
+      aria-disabled="true"
+      className={cn(shape, "cursor-default border-border text-muted-foreground opacity-70")}
+    >
+      {inner}
+    </span>
+  );
+}
+
+function AppDownloadCard({
+  wordmark,
+  name,
+  pitch,
+  links,
+  detailHref,
+}: {
+  wordmark: string;
+  name: string;
+  pitch: string;
+  links: { ios: string | null; android: string | null };
+  detailHref: string;
+}) {
+  return (
+    <div className="flex flex-col gap-5 bg-surface p-8 sm:p-10">
+      <p className="eyebrow">{wordmark}</p>
+      <h2 className="display text-3xl sm:text-4xl">{name}</h2>
+      <p className="text-base leading-relaxed text-muted-foreground" style={{ maxWidth: "30rem" }}>
+        {pitch}
+      </p>
+
+      <div className="mt-auto flex flex-col gap-4 pt-2">
+        <div className="flex flex-wrap gap-3">
+          <StoreButton href={links.ios} icon={<AppleMark />} label="App Store" sub="Download on the" />
+          <StoreButton href={links.android} icon={<PlayMark />} label="Google Play" sub="Get it on" />
+        </div>
+        <a
+          href={detailHref}
+          className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+        >
+          What it does ↓
+        </a>
+      </div>
+    </div>
+  );
+}
+
 /* ─── per-app hero ──────────────────────────────────────────── */
 
 type Cta = { href: string; label: string; primary?: boolean };
@@ -180,6 +300,7 @@ type Cta = { href: string; label: string; primary?: boolean };
  * as distinct products rather than two paragraphs of the same page.
  */
 function AppHero({
+  id,
   wordmark,
   headline,
   lead,
@@ -190,6 +311,7 @@ function AppHero({
   tone = "light",
   reversed = false,
 }: {
+  id: string;
   wordmark: string;
   headline: React.ReactNode;
   lead: string;
@@ -203,8 +325,10 @@ function AppHero({
   const dark = tone === "dark";
   return (
     <section
+      id={id}
       className={cn(
-        "relative overflow-hidden border-b border-border",
+        // scroll-mt clears the sticky header when jumped to from the hero.
+        "relative scroll-mt-16 overflow-hidden border-b border-border",
         dark ? "dark bg-background" : "bg-surface",
       )}
     >
@@ -297,31 +421,47 @@ export default function AppsPage() {
     <div className="flex flex-1 flex-col">
       {/* ── HERO ─────────────────────────────────────────── */}
       <section className="border-b border-border">
-        <div className="mx-auto w-full max-w-7xl px-6 pt-20 pb-16 sm:pt-28 sm:pb-24">
+        <div className="mx-auto w-full max-w-7xl px-6 pt-20 pb-16 sm:pt-24 sm:pb-20">
           <p className="eyebrow mb-6">The apps · LUX</p>
           <h1
             className="display"
-            style={{ fontSize: "clamp(2.6rem, 6vw, 5rem)", maxWidth: "18ch" }}
+            style={{ fontSize: "clamp(2.4rem, 5.2vw, 4.25rem)", maxWidth: "20ch" }}
           >
-            One system.
-            <br />
+            One system.{" "}
             <span className="text-muted-foreground">
               Two <em>apps.</em>
             </span>
           </h1>
-          <p
-            className="mt-7 text-base sm:text-lg leading-relaxed text-muted-foreground"
-            style={{ maxWidth: "38rem" }}
-          >
-            LUX Business is how the shop runs — bookings, clients, team, and the
-            mirror fleet. LUX Booking is how clients find you and book
-            themselves in. Same platform, same live calendar, two front doors.
+
+          {/* Both apps above the fold with their store links — the page's job
+              is to get people to a download, not to explain first. */}
+          <div className="mt-12 grid gap-px overflow-hidden rounded-2xl bg-border lg:grid-cols-2">
+            <AppDownloadCard
+              wordmark="For owners & teams"
+              name="LUX Business"
+              pitch="Run the shop: bookings, clients, team schedules, and every mirror on your floor."
+              links={STORE_LINKS.business}
+              detailHref="#lux-business"
+            />
+            <AppDownloadCard
+              wordmark="For their clients"
+              name="LUX Booking"
+              pitch="Let clients find you, book themselves in, check in on arrival, and keep every look."
+              links={STORE_LINKS.booking}
+              detailHref="#lux-booking"
+            />
+          </div>
+
+          <p className="mt-6 text-sm text-muted-foreground">
+            Both apps are in private beta with pilot salons — the store links go
+            live with the first fleet.
           </p>
         </div>
       </section>
 
       {/* ── LUX BUSINESS ─────────────────────────────────── */}
       <AppHero
+        id="lux-business"
         wordmark="LUX Business · for owners & teams"
         headline={
           <>
@@ -344,6 +484,7 @@ export default function AppsPage() {
 
       {/* ── LUX BOOKING ──────────────────────────────────── */}
       <AppHero
+        id="lux-booking"
         tone="dark"
         reversed
         wordmark="LUX Booking · for their clients"
