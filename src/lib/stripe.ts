@@ -170,6 +170,16 @@ export async function createDepositCheckoutSession(
       "line_items[0][quantity]": "1",
       client_reference_id: reservationId,
       "metadata[reservation_id]": reservationId,
+      // Sales tax on the deposit, off until Stripe Tax is activated and
+      // registered — enabling it before that makes session creation fail
+      // outright, which would take the reserve flow down. See
+      // prompts/SALES_TAX_RUNBOOK.md.
+      ...(process.env.STRIPE_TAX_ENABLED === "true"
+        ? {
+            "automatic_tax[enabled]": "true",
+            billing_address_collection: "required",
+          }
+        : {}),
       success_url: `${siteUrl()}/reserve?deposit=success`,
       cancel_url: `${siteUrl()}/reserve?deposit=cancelled`,
     },
