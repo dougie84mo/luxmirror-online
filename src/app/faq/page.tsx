@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/faq" },
   title: "FAQ",
   description:
     "Common questions about the LUX Smart Mirror — pricing, shipping, deposits, privacy, installation, and support.",

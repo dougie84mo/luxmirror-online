@@ -4,6 +4,7 @@ import { ReserveForm } from "./ReserveForm";
 import { isMirrorModel, type MirrorModelId } from "./models";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/reserve" },
   title: "Reserve a mirror",
   description:
     "Hold a LUX Smart Mirror for your salon. $0 today — your card is only charged when the unit ships. Q4 2026 delivery.",

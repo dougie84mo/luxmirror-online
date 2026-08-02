@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { ContactForm } from "./ContactForm";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/contact" },
   title: "Contact",
   description:
     "Questions about the LUX Smart Mirror, wholesale, press, or partnerships — talk to the LUX team.",

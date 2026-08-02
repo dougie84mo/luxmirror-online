@@ -7,10 +7,13 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/shop" },
   title: "Shop",
   description:
     "Reserve a LUX Smart Mirror for your salon. One mirror, every chair, lifetime support.",
 };
+
+const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://theluxmirror.com";
 
 /* ─── data ──────────────────────────────────────────────────── */
 
@@ -106,11 +109,42 @@ const faqs = [
   },
 ];
 
+/* Product markup for the two mirrors. This is what can earn a price and
+ * availability line in search results rather than a bare blue link.
+ * PreOrder is the honest availability: reservations are open, units ship Q4
+ * 2026 — claiming InStock for hardware that hasn't shipped is the kind of
+ * mismatch that gets rich results suppressed. Prices are parsed from the same
+ * `variants` array the page renders, so markup and copy cannot drift apart. */
+const PRODUCTS_LD = {
+  "@context": "https://schema.org",
+  "@graph": variants.map((v) => ({
+    "@type": "Product",
+    "@id": `${SITE}/shop#${v.id}`,
+    name: v.name,
+    description: v.blurb,
+    image: `${SITE}${v.src}`,
+    brand: { "@type": "Brand", name: "LUX Mirror" },
+    category: "Salon equipment",
+    offers: {
+      "@type": "Offer",
+      url: `${SITE}/reserve?model=${v.id}`,
+      priceCurrency: "USD",
+      price: v.price.replace(/[^0-9.]/g, ""),
+      availability: "https://schema.org/PreOrder",
+      seller: { "@id": `${SITE}/#organization` },
+    },
+  })),
+};
+
 /* ─── page ──────────────────────────────────────────────────── */
 
 export default function ShopPage() {
   return (
     <div className="flex flex-1 flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(PRODUCTS_LD) }}
+      />
       {/* ── HERO ─────────────────────────────────────────── */}
       <section className="border-b border-border">
         <div className="mx-auto w-full max-w-7xl px-6 pt-20 pb-16 sm:pt-28 sm:pb-24">

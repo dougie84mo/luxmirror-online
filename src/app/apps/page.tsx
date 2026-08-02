@@ -6,6 +6,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/apps" },
   title: "The Apps",
   description:
     "Two apps, one platform: LUX Business runs your salon — bookings, clients, team, and your mirror fleet — while LUX Booking lets clients find you and book themselves in.",
