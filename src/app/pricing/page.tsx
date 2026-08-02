@@ -239,7 +239,17 @@ export default async function PricingPage() {
                   </p>
                 </div>
 
-                <div className="grid gap-6 lg:grid-cols-3">
+                {/* Column count follows the family size — a family can gain a
+                    tier from the admin portal, and a hard-coded 3 would strand
+                    the fourth card alone on its own row. */}
+                <div
+                  className={cn(
+                    "grid gap-6",
+                    tiers.length >= 4
+                      ? "sm:grid-cols-2 xl:grid-cols-4"
+                      : "lg:grid-cols-3",
+                  )}
+                >
                   {tiers.map((plan) => {
                     const saving = annualSaving(plan);
                     return (
