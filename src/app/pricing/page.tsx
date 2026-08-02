@@ -1,4 +1,3 @@
-import { Fragment } from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -6,6 +5,20 @@ import { ArrowUpRight, Check, Minus, CircleHelp } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import {
+  FAMILY_COPY,
+  FAMILY_ORDER,
+  annualSaving,
+  familyOf,
+  formatPlanPrice,
+  getPublicPlans,
+} from "@/lib/plans";
+
+/* Plans are read live from the catalogue rather than hard-coded — see
+ * lib/plans.ts for why. Revalidated hourly so a price change in the admin
+ * portal reaches the site without a deploy, while the page still serves
+ * statically to crawlers. */
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   alternates: { canonical: "/pricing" },
@@ -15,74 +28,6 @@ export const metadata: Metadata = {
 };
 
 /* ─── data ──────────────────────────────────────────────────── */
-
-type Plan = {
-  id: string;
-  name: string;
-  eyebrow: string;
-  price: string;
-  cadence: string;
-  blurb: string;
-  cta: string;
-  ctaHref: string;
-  highlights: string[];
-  featured?: boolean;
-};
-
-const plans: Plan[] = [
-  {
-    id: "starter",
-    name: "Starter",
-    eyebrow: "Single chair",
-    price: "$29",
-    cadence: "per mirror / month",
-    blurb:
-      "Everything one chair needs: AR styling, gesture control, cloud backup.",
-    cta: "Start free trial",
-    ctaHref: "#",
-    highlights: [
-      "1 mirror included",
-      "AR styling library",
-      "Gesture control",
-      "Email support",
-    ],
-  },
-  {
-    id: "pro",
-    name: "Pro",
-    eyebrow: "Growing salons",
-    price: "$59",
-    cadence: "per mirror / month",
-    blurb:
-      "Fleet management, team roles, integrations. Scales as you add chairs.",
-    cta: "Reserve a mirror",
-    ctaHref: "/shop",
-    highlights: [
-      "Up to 12 mirrors",
-      "Fleet dashboard + roles",
-      "Booking + POS integrations",
-      "Priority support",
-    ],
-    featured: true,
-  },
-  {
-    id: "enterprise",
-    name: "Enterprise",
-    eyebrow: "Multi-location",
-    price: "Talk to us",
-    cadence: "volume pricing",
-    blurb:
-      "Multi-location ops, custom SSO, dedicated success manager.",
-    cta: "Contact sales",
-    ctaHref: "/contact",
-    highlights: [
-      "Unlimited mirrors",
-      "Multi-location reporting",
-      "SSO + audit logs",
-      "Dedicated success manager",
-    ],
-  },
-];
 
 type Hardware = {
   id: string;
@@ -115,104 +60,22 @@ const hardware: Hardware[] = [
   },
 ];
 
-type CompareRow = {
-  label: string;
-  starter: boolean | string;
-  pro: boolean | string;
-  enterprise: boolean | string;
-};
-
-const compareGroups: { title: string; rows: CompareRow[] }[] = [
-  {
-    title: "Core",
-    rows: [
-      { label: "AR styling library", starter: true, pro: true, enterprise: true },
-      { label: "Gesture controls", starter: true, pro: true, enterprise: true },
-      {
-        label: "Cloud backup",
-        starter: "30 days",
-        pro: "1 year",
-        enterprise: "Custom",
-      },
-      {
-        label: "Mirrors per account",
-        starter: "1",
-        pro: "12",
-        enterprise: "Unlimited",
-      },
-    ],
-  },
-  {
-    title: "Team & ops",
-    rows: [
-      { label: "Team roles", starter: false, pro: true, enterprise: true },
-      {
-        label: "Fleet dashboard",
-        starter: false,
-        pro: true,
-        enterprise: true,
-      },
-      {
-        label: "Multi-location reporting",
-        starter: false,
-        pro: false,
-        enterprise: true,
-      },
-      {
-        label: "Booking + POS integrations",
-        starter: false,
-        pro: true,
-        enterprise: true,
-      },
-    ],
-  },
-  {
-    title: "Security & support",
-    rows: [
-      {
-        label: "SSO / SAML",
-        starter: false,
-        pro: false,
-        enterprise: true,
-      },
-      {
-        label: "Audit logs",
-        starter: false,
-        pro: false,
-        enterprise: true,
-      },
-      {
-        label: "Support",
-        starter: "Email",
-        pro: "Priority",
-        enterprise: "Dedicated CSM",
-      },
-      {
-        label: "Uptime SLA",
-        starter: false,
-        pro: false,
-        enterprise: "99.9%",
-      },
-    ],
-  },
-];
-
 const faqs = [
   {
     q: "Why are there two prices?",
-    a: "The mirror is a one-time hardware purchase. The LUX cloud — AR styling, fleet management, integrations, updates — is a monthly subscription per mirror. You need both to run the product.",
+    a: "The mirror is a one-time hardware purchase. The LUX cloud — booking, styling, fleet management and updates — is a monthly subscription per business, not per mirror. Software-only plans need no hardware at all.",
   },
   {
-    q: "Why is Pro more per mirror than Starter?",
-    a: "Pro unlocks the fleet dashboard, team roles, booking/POS integrations, and priority support. Starter is a single chair on a single account — Pro is what scales a real salon.",
+    q: "Do I have to buy a mirror to use LUX?",
+    a: "No. The Booking plans are software only — calendar, clients, team and payments — and work with no hardware at all. Add a mirror later and you move to a Suite plan, which costs less than the two subscriptions apart.",
   },
   {
     q: "Can I switch plans later?",
     a: "Yes. Upgrades take effect immediately and are pro-rated. Downgrades take effect at the next billing cycle.",
   },
   {
-    q: "How does the trial work?",
-    a: "14 days, full Pro features, no card required. If you don't pick a plan at the end, your account drops to read-only until you do.",
+    q: "What is the difference between Booking, Mirror and Suite?",
+    a: "Booking is the salon software on its own, priced by how many people are on the floor. Mirror is the device cloud for shops that already have booking software they like. Suite is both together on one bill.",
   },
   {
     q: "Do you offer non-profit or beauty-school pricing?",
@@ -220,28 +83,11 @@ const faqs = [
   },
 ];
 
-/* ─── helpers ───────────────────────────────────────────────── */
-
-function Cell({ value }: { value: boolean | string }) {
-  if (value === true) {
-    return (
-      <Check className="size-4 text-foreground" aria-label="Included" />
-    );
-  }
-  if (value === false) {
-    return (
-      <Minus
-        className="size-4 text-foreground/30"
-        aria-label="Not included"
-      />
-    );
-  }
-  return <span className="text-sm font-medium">{value}</span>;
-}
-
 /* ─── page ──────────────────────────────────────────────────── */
 
-export default function PricingPage() {
+export default async function PricingPage() {
+  const plans = await getPublicPlans();
+
   return (
     <div className="flex flex-1 flex-col">
       {/* ── HERO ─────────────────────────────────────────── */}
@@ -277,7 +123,7 @@ export default function PricingPage() {
             <li className="menu-row">
               <span className="menu-label">LUX cloud</span>
               <span className="menu-dots" aria-hidden />
-              <span className="menu-value">from $29 / month, per mirror</span>
+              <span className="menu-value">from $15 / month, per business</span>
             </li>
           </ul>
         </div>
@@ -361,165 +207,172 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* ── PLAN CARDS ───────────────────────────────────── */}
+      {/* ── PLANS (live catalogue) ─────────────────── */}
       <section className="border-b border-border bg-surface">
         <div className="mx-auto w-full max-w-7xl px-6 py-24 sm:py-32">
           <div className="mb-14 max-w-2xl">
             <p className="eyebrow mb-5">LUX cloud</p>
             <h2 className="display text-4xl sm:text-5xl lg:text-6xl">
-              The software.{" "}
+              Software, mirrors,{" "}
               <span className="text-muted-foreground">
-                Monthly, per <em>mirror.</em>
+                or <em>both.</em>
               </span>
             </h2>
+            <p className="mt-7 text-base leading-relaxed text-muted-foreground">
+              One subscription per business. Take booking software on its own,
+              mirror cloud on its own, or the Suite for both — every plan is
+              month-to-month, and annual is billed once a year for less.
+            </p>
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-3">
-            {plans.map((plan) => (
-              <article
-                key={plan.id}
-                className={cn(
-                  "relative flex flex-col gap-7 overflow-hidden rounded-2xl p-8 sm:p-10",
-                  plan.featured
-                    ? "dark bg-background text-foreground ring-1 ring-foreground/15"
-                    : "bg-card ring-1 ring-border",
-                )}
-              >
-                {/* The featured card is smoked glass — the device's
-                    violet light rises from its base, like the mirror's. */}
-                {plan.featured && (
-                  <div
-                    aria-hidden
-                    className="pointer-events-none absolute inset-x-0 bottom-0"
-                    style={{
-                      height: "45%",
-                      background:
-                        "radial-gradient(80% 90% at 50% 110%, oklch(0.585 0.23 285 / 0.28), transparent 74%)",
-                    }}
-                  />
-                )}
-
-                <div className="relative flex items-center justify-between">
-                  <p className="eyebrow">{plan.eyebrow}</p>
-                  {plan.featured && (
-                    <span
-                      className="font-mono text-[0.6875rem] uppercase tracking-[0.2em]"
-                      style={{ color: "oklch(0.96 0.004 250 / 0.5)" }}
-                    >
-                      Most popular
-                    </span>
-                  )}
-                </div>
-
-                <h2 className="display relative text-4xl sm:text-5xl">
-                  {plan.name}
-                </h2>
-
-                <div className="relative flex items-baseline gap-2">
-                  <p className="display text-4xl sm:text-5xl">{plan.price}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {plan.cadence}
+          {FAMILY_ORDER.map((family) => {
+            const tiers = plans.filter((p) => familyOf(p) === family);
+            if (tiers.length === 0) return null;
+            const copy = FAMILY_COPY[family];
+            return (
+              <div key={family} className="mb-16 last:mb-0">
+                <div className="mb-7 max-w-2xl">
+                  <p className="eyebrow mb-3">{copy.eyebrow}</p>
+                  <h3 className="display text-2xl sm:text-3xl">{copy.name}</h3>
+                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                    {copy.blurb}
                   </p>
                 </div>
 
-                <p
-                  className="relative text-base leading-relaxed text-muted-foreground"
-                  style={{ minHeight: "3.25rem" }}
-                >
-                  {plan.blurb}
-                </p>
+                <div className="grid gap-6 lg:grid-cols-3">
+                  {tiers.map((plan) => {
+                    const saving = annualSaving(plan);
+                    return (
+                      <article
+                        key={plan.plan}
+                        className={cn(
+                          "relative flex flex-col rounded-2xl border p-8",
+                          plan.popular
+                            ? "border-transparent bg-background ring-2 ring-[var(--glow)]"
+                            : "border-border bg-background",
+                        )}
+                      >
+                        {plan.popular && (
+                          <span className="lux-chip absolute -top-3 left-8 bg-background">
+                            <span className="lux-chip-dot" />
+                            Most popular
+                          </span>
+                        )}
 
-                <Link
-                  href={plan.ctaHref}
-                  className={cn(
-                    buttonVariants({
-                      variant: plan.featured ? "default" : "outline",
-                      size: "lg",
-                    }),
-                    "relative h-12 w-full rounded-full px-6 text-sm font-medium",
-                  )}
-                >
-                  {plan.cta}
-                  <ArrowUpRight className="ml-1.5 size-4" />
-                </Link>
+                        <h4 className="display text-2xl">{plan.display_name}</h4>
+                        <p className="mt-2 text-sm text-muted-foreground">
+                          {plan.tagline}
+                        </p>
 
-                <ul className="relative mt-2 flex flex-col gap-3 border-t border-border pt-6 text-sm">
-                  {plan.highlights.map((h) => (
-                    <li key={h} className="flex items-start gap-3">
-                      <Check className="mt-0.5 size-4 shrink-0" />
-                      <span>{h}</span>
-                    </li>
-                  ))}
-                </ul>
-              </article>
-            ))}
-          </div>
+                        <div className="mt-7 flex items-baseline gap-1.5">
+                          <p className="display text-4xl">
+                            {formatPlanPrice(plan.monthly_price_cents)}
+                          </p>
+                          <span className="text-sm text-muted-foreground">/ month</span>
+                        </div>
+                        <p className="mt-1.5 text-xs text-muted-foreground">
+                          or {formatPlanPrice(plan.annual_price_cents)} / year
+                          {saving ? ` · ${saving}` : ""}
+                        </p>
 
-          <p className="mt-10 text-xs leading-relaxed text-muted-foreground">
-            Prices in USD. Annual billing saves 15%. Cancel anytime — no
-            contracts, no termination fees.
+                        <div className="mt-7 flex flex-col gap-3">
+                          {[
+                            `${plan.max_team_members} team ${plan.max_team_members === 1 ? "member" : "members"}`,
+                            plan.max_devices > 0
+                              ? `Up to ${plan.max_devices} ${plan.max_devices === 1 ? "mirror" : "mirrors"}`
+                              : "No mirror required",
+                            plan.max_businesses > 1
+                              ? `${plan.max_businesses} locations`
+                              : "Single location",
+                            plan.includes_booking
+                              ? "Booking, clients & payments"
+                              : "Mirror cloud only",
+                          ].map((line) => (
+                            <div key={line} className="flex items-start gap-2.5">
+                              <Check className="mt-0.5 size-4 shrink-0 text-foreground/60" />
+                              <span className="text-sm">{line}</span>
+                            </div>
+                          ))}
+                        </div>
+
+                        <Link
+                          href="/contact"
+                          className={cn(
+                            buttonVariants({
+                              variant: plan.popular ? "default" : "outline",
+                              size: "lg",
+                            }),
+                            "mt-8 h-11 w-full rounded-full text-sm font-medium",
+                          )}
+                        >
+                          Get started
+                        </Link>
+                      </article>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+
+          <p className="mt-12 text-sm text-muted-foreground">
+            Prices in USD, billed through Stripe. Month-to-month — no contracts,
+            no termination fees.
           </p>
         </div>
       </section>
 
-      {/* ── COMPARE TABLE ────────────────────────────────── */}
+      {/* ── COMPARE TABLE (live entitlements) ───────────── */}
       <section className="border-b border-border">
         <div className="mx-auto w-full max-w-7xl px-6 py-24 sm:py-32">
           <div className="mb-14 max-w-2xl">
             <p className="eyebrow mb-5">Compare</p>
             <h2 className="display text-4xl sm:text-5xl lg:text-6xl">
-              What&rsquo;s in each plan.
+              Every plan, side by side.
             </h2>
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[640px] border-collapse text-left">
+            <table className="w-full min-w-[720px] border-collapse text-left">
               <thead>
                 <tr className="border-b border-border">
-                  <th className="py-5 pr-6 text-sm font-semibold tracking-tight">
-                    Feature
-                  </th>
-                  {plans.map((p) => (
-                    <th
-                      key={p.id}
-                      className="py-5 pr-6 text-sm font-semibold tracking-tight"
-                    >
-                      {p.name}
-                    </th>
-                  ))}
+                  <th className="py-4 pr-4 text-sm font-medium">Plan</th>
+                  <th className="py-4 pr-4 text-sm font-medium">Booking software</th>
+                  <th className="py-4 pr-4 text-sm font-medium">Team</th>
+                  <th className="py-4 pr-4 text-sm font-medium">Mirrors</th>
+                  <th className="py-4 pr-4 text-sm font-medium">Locations</th>
+                  <th className="py-4 pr-4 text-sm font-medium">Monthly</th>
+                  <th className="py-4 text-sm font-medium">Annual</th>
                 </tr>
               </thead>
               <tbody>
-                {compareGroups.map((group) => (
-                  <Fragment key={group.title}>
-                    <tr className="bg-surface">
-                      <td
-                        colSpan={4}
-                        className="border-y border-border py-3 pr-6"
-                      >
-                        <p className="eyebrow">{group.title}</p>
-                      </td>
-                    </tr>
-                    {group.rows.map((row) => (
-                      <tr
-                        key={`${group.title}-${row.label}`}
-                        className="border-b border-border"
-                      >
-                        <td className="py-5 pr-6 text-sm text-foreground/80">
-                          {row.label}
-                        </td>
-                        <td className="py-5 pr-6">
-                          <Cell value={row.starter} />
-                        </td>
-                        <td className="py-5 pr-6">
-                          <Cell value={row.pro} />
-                        </td>
-                        <td className="py-5 pr-6">
-                          <Cell value={row.enterprise} />
-                        </td>
-                      </tr>
-                    ))}
-                  </Fragment>
+                {plans.map((plan) => (
+                  <tr key={plan.plan} className="border-b border-border">
+                    <td className="py-4 pr-4">
+                      <span className="text-sm font-medium">{plan.display_name}</span>
+                      <span className="ml-2 text-xs text-muted-foreground">
+                        {FAMILY_COPY[familyOf(plan)].name}
+                      </span>
+                    </td>
+                    <td className="py-4 pr-4">
+                      {plan.includes_booking ? (
+                        <Check className="size-4 text-foreground" aria-label="Included" />
+                      ) : (
+                        <Minus className="size-4 text-foreground/30" aria-label="Not included" />
+                      )}
+                    </td>
+                    <td className="py-4 pr-4 text-sm">{plan.max_team_members}</td>
+                    <td className="py-4 pr-4 text-sm">
+                      {plan.max_devices > 0 ? plan.max_devices : "—"}
+                    </td>
+                    <td className="py-4 pr-4 text-sm">{plan.max_businesses}</td>
+                    <td className="py-4 pr-4 text-sm">
+                      {formatPlanPrice(plan.monthly_price_cents)}
+                    </td>
+                    <td className="py-4 text-sm">
+                      {formatPlanPrice(plan.annual_price_cents)}
+                    </td>
+                  </tr>
                 ))}
               </tbody>
             </table>
