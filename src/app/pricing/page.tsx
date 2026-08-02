@@ -292,19 +292,15 @@ export default async function PricingPage() {
                               ? `Up to ${plan.max_devices} ${plan.max_devices === 1 ? "mirror" : "mirrors"}`
                               : "No mirror required",
                             // Locations are uncapped — there is no
-                            // max_locations. max_businesses caps separate
-                            // tenants (own team, own clients), which is a
-                            // franchise concern, not a "how many shops" one.
+                            // max_locations anywhere in the schema.
+                            // max_businesses is an anti-abuse rail on creating
+                            // separate tenants, not something we sell, so it
+                            // is deliberately not advertised here.
                             "Unlimited locations",
-                            plan.max_businesses > 1
-                              ? `Up to ${plan.max_businesses} separate businesses`
-                              : null,
                             plan.includes_booking
                               ? "Booking, clients & payments"
                               : "Mirror cloud only",
-                          ]
-                            .filter((line): line is string => line !== null)
-                            .map((line) => (
+                          ].map((line) => (
                             <div key={line} className="flex items-start gap-2.5">
                               <Check className="mt-0.5 size-4 shrink-0 text-foreground/60" />
                               <span className="text-sm">{line}</span>
@@ -357,9 +353,10 @@ export default async function PricingPage() {
                   <th className="py-4 pr-4 text-sm font-medium">Booking software</th>
                   <th className="py-4 pr-4 text-sm font-medium">Team</th>
                   <th className="py-4 pr-4 text-sm font-medium">Mirrors</th>
-                  {/* Not "Locations" — locations are unlimited on every plan.
-                      This column is separate businesses (tenants). */}
-                  <th className="py-4 pr-4 text-sm font-medium">Businesses</th>
+                  {/* No businesses/locations column: locations are unlimited
+                      on every plan, and max_businesses is an internal
+                      anti-abuse rail rather than something we sell. */}
+                  <th className="py-4 pr-4 text-sm font-medium">Locations</th>
                   <th className="py-4 pr-4 text-sm font-medium">Monthly</th>
                   <th className="py-4 text-sm font-medium">Annual</th>
                 </tr>
@@ -384,7 +381,7 @@ export default async function PricingPage() {
                     <td className="py-4 pr-4 text-sm">
                       {plan.max_devices > 0 ? plan.max_devices : "—"}
                     </td>
-                    <td className="py-4 pr-4 text-sm">{plan.max_businesses}</td>
+                    <td className="py-4 pr-4 text-sm">Unlimited</td>
                     <td className="py-4 pr-4 text-sm">
                       {formatPlanPrice(plan.monthly_price_cents)}
                     </td>
