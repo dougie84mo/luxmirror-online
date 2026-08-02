@@ -72,6 +72,11 @@ export async function createDepositCheckoutSession(
     "/checkout/sessions",
     {
       mode: "payment",
+      // Pin the methods: without this Stripe offers the dashboard's automatic
+      // set, which includes Pay Later (Klarna/Affirm/Afterpay). A deposit that
+      // gets applied to the purchase must not itself be financed.
+      "payment_method_types[0]": "card",
+      "payment_method_types[1]": "link",
       "line_items[0][price]": price,
       "line_items[0][quantity]": "1",
       client_reference_id: reservationId,
