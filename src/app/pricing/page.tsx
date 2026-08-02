@@ -291,13 +291,20 @@ export default async function PricingPage() {
                             plan.max_devices > 0
                               ? `Up to ${plan.max_devices} ${plan.max_devices === 1 ? "mirror" : "mirrors"}`
                               : "No mirror required",
+                            // Locations are uncapped — there is no
+                            // max_locations. max_businesses caps separate
+                            // tenants (own team, own clients), which is a
+                            // franchise concern, not a "how many shops" one.
+                            "Unlimited locations",
                             plan.max_businesses > 1
-                              ? `${plan.max_businesses} locations`
-                              : "Single location",
+                              ? `Up to ${plan.max_businesses} separate businesses`
+                              : null,
                             plan.includes_booking
                               ? "Booking, clients & payments"
                               : "Mirror cloud only",
-                          ].map((line) => (
+                          ]
+                            .filter((line): line is string => line !== null)
+                            .map((line) => (
                             <div key={line} className="flex items-start gap-2.5">
                               <Check className="mt-0.5 size-4 shrink-0 text-foreground/60" />
                               <span className="text-sm">{line}</span>
@@ -350,7 +357,9 @@ export default async function PricingPage() {
                   <th className="py-4 pr-4 text-sm font-medium">Booking software</th>
                   <th className="py-4 pr-4 text-sm font-medium">Team</th>
                   <th className="py-4 pr-4 text-sm font-medium">Mirrors</th>
-                  <th className="py-4 pr-4 text-sm font-medium">Locations</th>
+                  {/* Not "Locations" — locations are unlimited on every plan.
+                      This column is separate businesses (tenants). */}
+                  <th className="py-4 pr-4 text-sm font-medium">Businesses</th>
                   <th className="py-4 pr-4 text-sm font-medium">Monthly</th>
                   <th className="py-4 text-sm font-medium">Annual</th>
                 </tr>
