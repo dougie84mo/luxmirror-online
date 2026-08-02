@@ -52,7 +52,7 @@ const together = [
 
 function PhoneFrame({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative mx-auto w-full" style={{ maxWidth: "290px" }}>
+    <div className="relative mx-auto w-full" style={{ maxWidth: "320px" }}>
       <div aria-hidden className="wall-glow" />
       <div
         className="rounded-3xl p-2"
@@ -169,6 +169,127 @@ function BookingPhone() {
   );
 }
 
+/* ─── per-app hero ──────────────────────────────────────────── */
+
+type Cta = { href: string; label: string; primary?: boolean };
+
+/*
+ * One marketing hero per app: wordmark, benefit headline, lead, the wall-menu
+ * feature list, availability, and CTAs — with the phone opposite. `tone`
+ * flips the band between silvered paper and smoked glass so the two apps read
+ * as distinct products rather than two paragraphs of the same page.
+ */
+function AppHero({
+  wordmark,
+  headline,
+  lead,
+  features,
+  note,
+  ctas,
+  phone,
+  tone = "light",
+  reversed = false,
+}: {
+  wordmark: string;
+  headline: React.ReactNode;
+  lead: string;
+  features: ReadonlyArray<{ label: string; value: string }>;
+  note: string;
+  ctas: Cta[];
+  phone: React.ReactNode;
+  tone?: "light" | "dark";
+  reversed?: boolean;
+}) {
+  const dark = tone === "dark";
+  return (
+    <section
+      className={cn(
+        "relative overflow-hidden border-b border-border",
+        dark ? "dark bg-background" : "bg-surface",
+      )}
+    >
+      {dark && (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(55% 65% at 22% 90%, oklch(0.585 0.23 285 / 0.18), transparent 70%)",
+          }}
+        />
+      )}
+
+      <div className="feature-split relative mx-auto w-full max-w-7xl gap-16 px-6 py-24 sm:py-32 lg:items-center">
+        {/* text-foreground on the column, not per-element: <body> sets the
+            light-mode ink and children inherit that COMPUTED value, so inside
+            a .dark band anything without its own colour utility disappears.
+            Descendants that set text-muted-foreground still win. */}
+        <div className={cn("text-foreground", reversed && "lg:order-2")}>
+          <p className="eyebrow text-foreground">{wordmark}</p>
+
+          <h2
+            className="display mt-6"
+            style={{ fontSize: "clamp(2.25rem, 4.4vw, 3.75rem)", maxWidth: "15ch" }}
+          >
+            {headline}
+          </h2>
+
+          <p
+            className="mt-7 text-lg leading-relaxed text-muted-foreground"
+            style={{ maxWidth: "34rem" }}
+          >
+            {lead}
+          </p>
+
+          <div className="mt-10 flex flex-col gap-4" style={{ maxWidth: "34rem" }}>
+            {features.map((f) => (
+              <div key={f.label} className="menu-row">
+                <span className="menu-label">{f.label}</span>
+                <span className="menu-dots" />
+                <span className="menu-value">{f.value}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-10 flex flex-wrap items-center gap-4">
+            <span className="lux-chip">
+              <span className="lux-chip-dot" />
+              In private beta with pilot salons
+            </span>
+            <p className="text-sm text-muted-foreground">{note}</p>
+          </div>
+
+          <div className="mt-8 flex flex-wrap gap-3">
+            {ctas.map((cta) => (
+              <Link
+                key={cta.href}
+                href={cta.href}
+                className={cn(
+                  buttonVariants({
+                    variant: cta.primary ? "default" : "outline",
+                    size: "lg",
+                  }),
+                  "h-12 w-fit rounded-full px-7 text-sm font-medium",
+                  // Outline inherits text colour; inside a .dark band the
+                  // inherited value is light-mode ink and the label vanishes.
+                  !cta.primary && "text-foreground",
+                )}
+              >
+                {cta.label}
+                {cta.primary && <ArrowUpRight className="ml-1.5 size-4" />}
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {/* Copy leads on mobile for both apps; `reversed` only swaps columns
+            once there are actually two of them. */}
+        <div className={cn("mt-16 lg:mt-0", reversed && "lg:order-1")}>{phone}</div>
+      </div>
+    </section>
+  );
+}
+
 /* ─── page ──────────────────────────────────────────────────── */
 
 export default function AppsPage() {
@@ -200,96 +321,50 @@ export default function AppsPage() {
       </section>
 
       {/* ── LUX BUSINESS ─────────────────────────────────── */}
-      <section className="border-b border-border bg-surface">
-        <div className="feature-split mx-auto w-full max-w-7xl gap-16 px-6 py-24 sm:py-32 lg:items-center">
-          <div>
-            <p className="eyebrow mb-5">For owners &amp; teams</p>
-            <h2 className="display text-4xl sm:text-5xl lg:text-6xl">
-              LUX Business
-            </h2>
-            <p
-              className="mt-7 text-base sm:text-lg leading-relaxed text-muted-foreground"
-              style={{ maxWidth: "34rem" }}
-            >
-              The whole shop in one app: a calendar that fills itself, client
-              profiles with every look you&rsquo;ve cut, schedules and
-              permissions for the team, and — when you add the hardware — every
-              mirror on the floor, paired with a QR scan and managed from your
-              pocket. No mirror required to start.
-            </p>
-
-            <div className="mt-10 flex flex-col gap-4" style={{ maxWidth: "34rem" }}>
-              {businessFeatures.map((f) => (
-                <div key={f.label} className="menu-row">
-                  <span className="menu-label">{f.label}</span>
-                  <span className="menu-dots" />
-                  <span className="menu-value">{f.value}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-10 flex flex-wrap items-center gap-4">
-              <span className="lux-chip">
-                <span className="lux-chip-dot" />
-                In private beta with pilot salons
-              </span>
-              <p className="text-sm text-muted-foreground">
-                App Store &amp; Google Play — arriving with the first fleet.
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-16 lg:mt-0">
-            <BusinessPhone />
-          </div>
-        </div>
-      </section>
+      <AppHero
+        wordmark="LUX Business · for owners & teams"
+        headline={
+          <>
+            The whole shop,
+            <br />
+            <span className="text-muted-foreground">
+              in one <em>app.</em>
+            </span>
+          </>
+        }
+        lead="A calendar that fills itself, client profiles with every look you've cut, schedules and permissions for the team, and — when you add the hardware — every mirror on the floor, paired with a QR scan and managed from your pocket. No mirror required to start."
+        features={businessFeatures}
+        note="App Store & Google Play — arriving with the first fleet."
+        ctas={[
+          { href: "/shop", label: "Reserve a mirror", primary: true },
+          { href: "/pricing", label: "See pricing" },
+        ]}
+        phone={<BusinessPhone />}
+      />
 
       {/* ── LUX BOOKING ──────────────────────────────────── */}
-      <section className="border-b border-border">
-        <div className="feature-split mx-auto w-full max-w-7xl gap-16 px-6 py-24 sm:py-32 lg:items-center">
-          {/* Copy first in DOM for mobile; phone leads on desktop. */}
-          <div className="order-2 mt-16 lg:order-1 lg:mt-0">
-            <BookingPhone />
-          </div>
-
-          <div className="order-1 lg:order-2">
-            <p className="eyebrow mb-5">For their clients</p>
-            <h2 className="display text-4xl sm:text-5xl lg:text-6xl">
-              LUX Booking
-            </h2>
-            <p
-              className="mt-7 text-base sm:text-lg leading-relaxed text-muted-foreground"
-              style={{ maxWidth: "34rem" }}
-            >
-              The booking app your clients will actually keep: real openings
-              from your real calendar, rescheduling without the phone tag,
-              self check-in on arrival — and after the visit, the photos your
-              mirror took of the finished look, saved to their profile.
-            </p>
-
-            <div className="mt-10 flex flex-col gap-4" style={{ maxWidth: "34rem" }}>
-              {bookingFeatures.map((f) => (
-                <div key={f.label} className="menu-row">
-                  <span className="menu-label">{f.label}</span>
-                  <span className="menu-dots" />
-                  <span className="menu-value">{f.value}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-10 flex flex-wrap items-center gap-4">
-              <span className="lux-chip">
-                <span className="lux-chip-dot" />
-                In private beta with pilot salons
-              </span>
-              <p className="text-sm text-muted-foreground">
-                Free for clients, always.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <AppHero
+        tone="dark"
+        reversed
+        wordmark="LUX Booking · for their clients"
+        headline={
+          <>
+            Your clients,
+            <br />
+            <span className="text-muted-foreground">
+              booking <em>themselves.</em>
+            </span>
+          </>
+        }
+        lead="The booking app your clients will actually keep: real openings from your real calendar, rescheduling without the phone tag, self check-in on arrival — and after the visit, the photos your mirror took of the finished look, saved to their profile."
+        features={bookingFeatures}
+        note="Free for clients, always."
+        ctas={[
+          { href: "/contact", label: "Ask about early access", primary: true },
+          { href: "/faq", label: "Common questions" },
+        ]}
+        phone={<BookingPhone />}
+      />
 
       {/* ── BETTER TOGETHER ──────────────────────────────── */}
       <section className="border-b border-border bg-surface">
