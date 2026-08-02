@@ -64,6 +64,95 @@ export async function getDepositPriceId(): Promise<string> {
   return price.id;
 }
 
+/*
+ * The catalogue, straight from Stripe — the same objects the admin portal
+ * edits, so a copy/price/image change on /plans shows up here with no deploy
+ * and no mirror table to drift.
+ *
+ * `kind` comes from product metadata (set in the admin portal):
+ *   physical    — a shippable good (the mirrors)
+ *   service_fee — a charge that ships nothing (the reservation deposit)
+ * Products predating the tag read as physical.
+ */
+export type CatalogKind = "physical" | "service_fee";
+
+export type CatalogItem = {
+  productId: string;
+  name: string;
+  description: string | null;
+  images: string[];
+  kind: CatalogKind;
+  priceId: string;
+  lookupKey: string | null;
+  unitAmount: number | null;
+  currency: string;
+};
+
+type StripeList<T> = { data: T[] };
+
+async function stripeGet<T>(path: string, params: Record<string, string>): Promise<T> {
+  const res = await fetch(`${STRIPE_API}${path}?${new URLSearchParams(params)}`, {
+    headers: { Authorization: `Bearer ${secretKey()}` },
+    // Storefront copy changes shouldn't need a redeploy, but every render
+    // shouldn't hit Stripe either.
+    next: { revalidate: 300 },
+  });
+  if (!res.ok) {
+    throw new Error(`Stripe ${path} failed: ${res.status} ${await res.text()}`);
+  }
+  return (await res.json()) as T;
+}
+
+/** Active one-time products with their price, newest-priced first. */
+export async function listCatalog(kind?: CatalogKind): Promise<CatalogItem[]> {
+  const [products, prices] = await Promise.all([
+    stripeGet<StripeList<{
+      id: string;
+      name: string;
+      description: string | null;
+      images?: string[];
+      metadata?: Record<string, string>;
+    }>>("/products", { active: "true", limit: "100" }),
+    stripeGet<StripeList<{
+      id: string;
+      product: string;
+      lookup_key: string | null;
+      unit_amount: number | null;
+      currency: string;
+      recurring: unknown | null;
+    }>>("/prices", { active: "true", limit: "100" }),
+  ]);
+
+  const items: CatalogItem[] = [];
+  for (const product of products.data) {
+    const price = prices.data.find((p) => p.product === product.id && !p.recurring);
+    if (!price) continue; // subscription plans are not storefront items
+    const itemKind = (product.metadata?.kind as CatalogKind) ?? "physical";
+    if (kind && itemKind !== kind) continue;
+    items.push({
+      productId: product.id,
+      name: product.name,
+      description: product.description,
+      images: product.images ?? [],
+      kind: itemKind,
+      priceId: price.id,
+      lookupKey: price.lookup_key,
+      unitAmount: price.unit_amount,
+      currency: price.currency,
+    });
+  }
+  return items.sort((a, b) => (b.unitAmount ?? 0) - (a.unitAmount ?? 0));
+}
+
+export function formatPrice(cents: number | null, currency = "usd"): string {
+  if (cents == null) return "—";
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: currency.toUpperCase(),
+    maximumFractionDigits: cents % 100 === 0 ? 0 : 2,
+  }).format(cents / 100);
+}
+
 export async function createDepositCheckoutSession(
   reservationId: string,
 ): Promise<string> {
