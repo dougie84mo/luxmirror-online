@@ -58,30 +58,27 @@ const milestones = [
   },
 ];
 
+/* Bios describe the scope of each role, not personal history — real
+ * background copy comes from each founder. `src` still points at the
+ * placeholder line art until headshots land. */
 const team = [
   {
-    name: "Maya Patel",
-    role: "Co-founder · CEO",
-    bio: "Built fleet software at Square. Daughter of a hairstylist.",
+    name: "Julian Martinez",
+    role: "Founder · Owner/CEO",
+    bio: "Leads LUX — product direction, partnerships, and the salons we build for.",
     src: "/images/stylist-1.svg",
   },
   {
-    name: "Theo Okafor",
+    name: "Douglas Richardson",
     role: "Co-founder · CTO",
-    bio: "Computer vision at Apple's Vision team. Former barber.",
+    bio: "Leads engineering across the platform: mirror firmware, cloud, and the apps salons run on.",
     src: "/images/stylist-2.svg",
   },
   {
-    name: "Renata Vance",
-    role: "Head of Design",
-    bio: "Hardware design at Teenage Engineering and Snap.",
+    name: "Michael Brensinger",
+    role: "Co-founder · CBO",
+    bio: "Leads the business — go-to-market, pricing, and salon partnerships.",
     src: "/images/stylist-3.svg",
-  },
-  {
-    name: "Sam Liu",
-    role: "Head of Salon Success",
-    bio: "Twenty years operating multi-location salons.",
-    src: "/images/stylist-4.svg",
   },
 ];
 
@@ -228,7 +225,7 @@ export default function AboutPage() {
             </h2>
           </div>
 
-          <ul className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+          <ul className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
             {team.map((m) => (
               <li key={m.name} className="flex flex-col gap-5">
                 <div className="relative aspect-square overflow-hidden rounded-2xl bg-warm ring-1 ring-border">
@@ -237,7 +234,7 @@ export default function AboutPage() {
                     alt={m.name}
                     fill
                     className="object-cover"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   />
                 </div>
                 <div className="flex flex-col gap-1">
@@ -254,7 +251,7 @@ export default function AboutPage() {
           </ul>
 
           <p className="mt-16 text-sm text-muted-foreground">
-            We&rsquo;re a small team in Oakland and remote.{" "}
+            We&rsquo;re a small team in Wyomissing and remote.{" "}
             <Link
               href="/careers"
               className="underline-offset-4 hover:text-foreground hover:underline"

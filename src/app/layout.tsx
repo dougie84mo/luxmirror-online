@@ -76,8 +76,10 @@ const ORGANIZATION_LD = {
       email: "hello@theluxmirror.com",
       address: {
         "@type": "PostalAddress",
-        addressLocality: "Oakland",
-        addressRegion: "CA",
+        streetAddress: "96 Commerce Drive PMB 200",
+        addressLocality: "Wyomissing",
+        addressRegion: "PA",
+        postalCode: "19610",
         addressCountry: "US",
       },
     },
