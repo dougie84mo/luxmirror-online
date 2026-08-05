@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import { getPaidDepositSession, type DepositSession } from "@/lib/stripe";
+import { DepositPurchaseEvent } from "./DepositPurchaseEvent";
 import { ReserveForm } from "./ReserveForm";
 import { isMirrorModel, type MirrorModelId } from "./models";
 
@@ -13,10 +15,15 @@ export const metadata: Metadata = {
 export default async function ReservePage({
   searchParams,
 }: PageProps<"/reserve">) {
-  const { model, deposit } = await searchParams;
+  const { model, deposit, session_id: sessionId } = await searchParams;
   const depositState = Array.isArray(deposit) ? deposit[0] : deposit;
   if (depositState === "success" || depositState === "cancelled") {
-    return <DepositReturn kind={depositState} />;
+    const rawSession = Array.isArray(sessionId) ? sessionId[0] : sessionId;
+    const paid =
+      depositState === "success" && rawSession
+        ? await getPaidDepositSession(rawSession)
+        : null;
+    return <DepositReturn kind={depositState} paid={paid} />;
   }
   const raw = Array.isArray(model) ? model[0] : model;
   const defaultModel: MirrorModelId =
@@ -67,10 +74,23 @@ export default async function ReservePage({
 /* Landing states for the Stripe Checkout round-trip. The reservation was
  * already created before checkout opened, so neither state re-renders the
  * form — that would invite duplicate submissions. */
-function DepositReturn({ kind }: { kind: "success" | "cancelled" }) {
+function DepositReturn({
+  kind,
+  paid,
+}: {
+  kind: "success" | "cancelled";
+  paid: DepositSession | null;
+}) {
   const success = kind === "success";
   return (
     <div className="mx-auto w-full max-w-2xl px-6 py-24 sm:py-32">
+      {paid && (
+        <DepositPurchaseEvent
+          transactionId={paid.transactionId}
+          value={paid.value}
+          currency={paid.currency}
+        />
+      )}
       <div className="relative rounded-2xl border bg-surface p-8 sm:p-10">
         <div aria-hidden className="wall-glow" />
         <p className="eyebrow mb-5">

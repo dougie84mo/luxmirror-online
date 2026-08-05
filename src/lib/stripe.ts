@@ -153,6 +153,54 @@ export function formatPrice(cents: number | null, currency = "usd"): string {
   }).format(cents / 100);
 }
 
+export type DepositSession = {
+  transactionId: string;
+  /** Major units (dollars), which is what GA4's `value` expects. */
+  value: number;
+  /** ISO-4217, uppercased — Stripe returns it lowercase. */
+  currency: string;
+};
+
+/*
+ * Confirms a returning visitor actually paid, and for how much.
+ *
+ * The success_url is an ordinary GET that anyone can type or share, so the
+ * conversion event must be sourced from Stripe rather than from the query
+ * string — an Ads conversion action built on self-reported success would
+ * optimise bidding against fabricated events. Returns null for anything not
+ * verifiably paid, including a missing key or an unreachable Stripe.
+ */
+export async function getPaidDepositSession(
+  sessionId: string,
+): Promise<DepositSession | null> {
+  // Cheap shape check before spending a round-trip on obvious junk.
+  if (!/^cs_[A-Za-z0-9_]{10,150}$/.test(sessionId)) return null;
+  try {
+    const res = await fetch(`${STRIPE_API}/checkout/sessions/${sessionId}`, {
+      headers: { Authorization: `Bearer ${secretKey()}` },
+      // Per-visitor payment state: never share a response between requests.
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    const session = (await res.json()) as {
+      id: string;
+      payment_status?: string;
+      amount_total?: number | null;
+      currency?: string | null;
+    };
+    if (session.payment_status !== "paid") return null;
+    return {
+      transactionId: session.id,
+      value: (session.amount_total ?? 0) / 100,
+      currency: (session.currency ?? "usd").toUpperCase(),
+    };
+  } catch (err) {
+    // A reporting event is never worth failing the thank-you page over.
+    console.error("getPaidDepositSession failed", err);
+    return null;
+  }
+}
+
 export async function createDepositCheckoutSession(
   reservationId: string,
 ): Promise<string> {
@@ -180,7 +228,10 @@ export async function createDepositCheckoutSession(
             billing_address_collection: "required",
           }
         : {}),
-      success_url: `${siteUrl()}/reserve?deposit=success`,
+      // {CHECKOUT_SESSION_ID} is substituted by Stripe on redirect. It is what
+      // lets the return page verify the payment instead of trusting the URL,
+      // and it doubles as the analytics transaction id.
+      success_url: `${siteUrl()}/reserve?deposit=success&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteUrl()}/reserve?deposit=cancelled`,
     },
   );
