@@ -13,9 +13,46 @@ function siteUrl(): string {
   return process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 }
 
+/*
+ * Test/live selection. STRIPE_MODE picks between two secret keys that both live
+ * in the env, so switching is a one-word edit rather than swapping a key in and
+ * out of a single slot. STRIPE_SECRET_KEY still works on its own for an
+ * un-migrated env (and is what production sets today).
+ *
+ * Read at call time, not module scope — Next dev-server reloads pick up an edited
+ * .env.local without a restart, and a module-scope const would cache the old one.
+ */
+export type StripeMode = "test" | "live";
+
+export function stripeMode(): StripeMode {
+  return process.env.STRIPE_MODE === "live" ? "live" : "test";
+}
+
 function secretKey(): string {
-  const key = process.env.STRIPE_SECRET_KEY;
-  if (!key) throw new Error("Missing STRIPE_SECRET_KEY");
+  const mode = stripeMode();
+  const key =
+    (mode === "live"
+      ? process.env.STRIPE_SECRET_KEY_LIVE
+      : process.env.STRIPE_SECRET_KEY_TEST) || process.env.STRIPE_SECRET_KEY;
+
+  if (!key) {
+    throw new Error(
+      `Missing Stripe secret key for ${mode} mode — set STRIPE_SECRET_KEY_${mode.toUpperCase()} ` +
+        `(or STRIPE_SECRET_KEY) in .env.local`,
+    );
+  }
+
+  // A key that contradicts the declared mode is a hard error, in both
+  // directions: a live key under STRIPE_MODE=test charges real cards during a
+  // test run, and a test key under STRIPE_MODE=live takes fake money from a real
+  // customer. Failing the request is strictly better than either.
+  const expected = mode === "live" ? "sk_live_" : "sk_test_";
+  if (!key.startsWith(expected)) {
+    throw new Error(
+      `STRIPE_MODE=${mode} but the resolved secret key starts "${key.slice(0, 8)}…" ` +
+        `— expected ${expected}. Refusing to call Stripe against the wrong environment.`,
+    );
+  }
   return key;
 }
 
@@ -38,11 +75,17 @@ async function stripeForm<T>(
 }
 
 /* Resolved once per server instance — the price is looked up by lookup_key
- * at runtime (no hard-coded price IDs, same convention as the plans). */
-let depositPriceId: string | null = null;
+ * at runtime (no hard-coded price IDs, same convention as the plans).
+ *
+ * Cached per mode: price IDs are mode-bound, so a cache keyed only by "have we
+ * resolved this yet" would hand a test-mode price to a live-mode call after a
+ * mode switch. The lookup_key itself is mode-portable, which is the whole point. */
+const depositPriceIdByMode: Partial<Record<StripeMode, string>> = {};
 
 export async function getDepositPriceId(): Promise<string> {
-  if (depositPriceId) return depositPriceId;
+  const mode = stripeMode();
+  const cached = depositPriceIdByMode[mode];
+  if (cached) return cached;
   const res = await fetch(
     `${STRIPE_API}/prices?${new URLSearchParams({
       "lookup_keys[]": "mirror_deposit",
@@ -58,9 +101,11 @@ export async function getDepositPriceId(): Promise<string> {
   const body = (await res.json()) as { data: Array<{ id: string }> };
   const price = body.data[0];
   if (!price) {
-    throw new Error("No active Stripe price with lookup_key=mirror_deposit");
+    throw new Error(
+      `No active Stripe price with lookup_key=mirror_deposit in ${mode} mode`,
+    );
   }
-  depositPriceId = price.id;
+  depositPriceIdByMode[mode] = price.id;
   return price.id;
 }
 
