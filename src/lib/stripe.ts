@@ -46,11 +46,18 @@ function secretKey(): string {
   // directions: a live key under STRIPE_MODE=test charges real cards during a
   // test run, and a test key under STRIPE_MODE=live takes fake money from a real
   // customer. Failing the request is strictly better than either.
-  const expected = mode === "live" ? "sk_live_" : "sk_test_";
-  if (!key.startsWith(expected)) {
+  //
+  // Both sk_ (standard) and rk_ (restricted) are accepted. This surface touches
+  // four endpoints — read prices, read products, create and read Checkout
+  // Sessions — so a restricted key scoped to exactly those is the right call for
+  // a public web server, where a standard key could also issue refunds and move
+  // payouts. The prefix still carries the mode, which is all the guard checks.
+  const expected = mode === "live" ? /^(sk|rk)_live_/ : /^(sk|rk)_test_/;
+  if (!expected.test(key)) {
     throw new Error(
-      `STRIPE_MODE=${mode} but the resolved secret key starts "${key.slice(0, 8)}…" ` +
-        `— expected ${expected}. Refusing to call Stripe against the wrong environment.`,
+      `STRIPE_MODE=${mode} but the resolved key starts "${key.slice(0, 8)}…" — ` +
+        `expected sk_${mode}_ or rk_${mode}_. Refusing to call Stripe against ` +
+        `the wrong environment.`,
     );
   }
   return key;
