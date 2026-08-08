@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  
+  <defs><linearGradient id="g_reflection_m" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#a48eff"/><stop offset="1" stop-color="#5b3fe0"/>
+  </linearGradient></defs>
+  <path d="M22 24 L22 98 L54 98 L54 84 L37 84 L37 24 Z" fill="#0b0d12"/>
+  <path d="M98 24 L98 98 L66 98 L66 84 L83 84 L83 24 Z" fill="url(#g_reflection_m)"/>
+  <line x1="60" y1="16" x2="60" y2="106" stroke="#7c5cff" stroke-width="1.6" stroke-dasharray="1.5 5" stroke-linecap="round"/>
+</svg>

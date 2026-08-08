@@ -214,6 +214,36 @@
   }
 
   /*
+   * Wordmark — LUXMIRROR set in the display face, wide-tracked, with the
+   * app icon's violet glint riding above the final R. Everything is sized
+   * in em so one component serves the 16px header and the 30px footer.
+   */
+  .wordmark {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 0.1em;
+    font-family: var(--font-display);
+    font-variation-settings: "opsz" 96;
+    font-weight: 460;
+    letter-spacing: 0.14em;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  /* Letter-spacing adds a trailing gap after the final R; claw it back so
+     the glint sits against the letter rather than floating off it. */
+  .wordmark-text {
+    margin-right: -0.14em;
+  }
+
+  .wordmark-glint {
+    flex: none;
+    width: 0.4em;
+    height: 0.4em;
+    margin-top: -0.04em;
+  }
+
+  /*
    * Eyebrow — mono uppercase structural labels. Deliberately quiet:
    * they orient the reader without competing with the headline.
    */

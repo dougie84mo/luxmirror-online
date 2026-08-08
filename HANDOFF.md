@@ -23,11 +23,35 @@ Spec sheets stay in this file (not served). Binaries go in `public/brand/`.
 
 | Blocker | Status |
 |---|---|
-| App icons are the Expo template default | 🔴 **Both apps ship the identical stock icon** (verified: same md5). Two apps can't carry the same icon on the stores, and neither is branded. |
+| App icons are the Expo template default | 🔴 **Both apps ship the identical stock icon** (verified: same md5). Two apps can't carry the same icon on the stores, and neither is branded. `lux-*` in `app-icons/` is ready to drop in for one of them; the other still needs its own mark. |
 | Feature graphic (Play) | 🔴 Missing — Play will not publish without it. |
 | Screenshots | 🔴 None captured for either app, either platform. |
-| Wordmark / logomark files | 🔴 The site draws "LUX" as live text. There is no exported logo file anywhere in the repo. |
-| Store listing copy | 🟡 Not written. Templates below. |
+| Web favicons | ✅ Done. `lux-favicon.ico` / `lux-icon.svg` / `lux-180.png` are installed on both theluxmirror.com and admin.theluxmirror.com. |
+| Site wordmark | ✅ Done. See "The wordmark" below. |
+| Store listing copy | ✅ Drafted for all four listings in `listing/`. Needs a read-through, not a rewrite. |
+
+---
+
+## The wordmark
+
+The site's wordmark is **live text, not an image** —
+`src/components/Wordmark.tsx` plus the `.wordmark` rules in `globals.css`.
+It sets LUXMIRROR in Bodoni Moda with the app icon's violet glint above the
+final R. Header, mobile menu, and footer all render the same component.
+
+Text rather than a PNG because the header sits on silver and the footer on
+ink: live text inherits the surface colour, stays sharp at any size and
+density, and lets search engines and screen readers read the brand name
+instead of an `alt` attribute. Size it with a normal `text-*` class — every
+dimension inside is in `em`.
+
+`logo/1-monogram.png` … `logo/7-glint.png` are **concept boards**, not
+production files: raster, all on a solid dark ground, several with a tagline
+baked in. Keep them for reference and for picking a direction. What is still
+missing for third parties who need a file rather than a component is an
+outlined-vector `logo/lux-wordmark.svg` — glyphs converted to paths so it
+doesn't depend on Bodoni being installed. Same for `lux-mark.svg`, whose `L`
+is still a `<text>` element falling back to Georgia off our pages.
 
 ---
 
@@ -165,12 +189,14 @@ Same files as `public/brand/logo/lux-logomark-1024.png`.
 
 ## Checklist
 
-- [ ] Wordmark + logomark exported to `public/brand/logo/`
+- [x] Site wordmark — `src/components/Wordmark.tsx`, live on header + footer
+- [x] Favicons on theluxmirror.com and admin.theluxmirror.com
+- [x] Listing copy drafted for four listings (2 apps × 2 stores)
+- [x] Stripe branding uploaded
+- [ ] Outlined-vector `logo/lux-wordmark.svg` for third parties
 - [ ] Two distinct app icons, all three size slots each
 - [ ] Icons copied into `app/assets/images/` and `customer-app/assets/images/`
 - [ ] Play feature graphic, 1024×500
 - [ ] iOS screenshots, 1320×2868, both apps
 - [ ] Play screenshots, 1080×1920, both apps
-- [ ] Listing copy written for four listings (2 apps × 2 stores)
-- [ ] Stripe branding uploaded
 - [ ] Product photography replacing the SVG stand-ins

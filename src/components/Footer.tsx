@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { Wordmark } from "@/components/Wordmark";
+
 const footerLinks = [
   {
     title: "Product",
@@ -34,7 +36,7 @@ export function Footer() {
       <div className="mx-auto w-full max-w-7xl px-6 pt-24 pb-12">
         <div className="grid gap-12 sm:grid-cols-3 lg:grid-cols-4">
           <div className="lg:col-span-1">
-            <p className="display text-3xl">LUX</p>
+            <Wordmark className="text-xl" />
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
               Smart mirrors for modern salons. Built in Pennsylvania.
             </p>

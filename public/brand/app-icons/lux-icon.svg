@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <rect width="120" height="120" rx="26" fill="#0b0d12"/>
+  
+  <defs><linearGradient id="g_lux_t" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#a48eff"/><stop offset="1" stop-color="#5b3fe0"/>
+  </linearGradient></defs>
+  <text x="44" y="88" text-anchor="middle" font-family="Cormorant Garamond, Georgia, serif" font-weight="500" font-size="88" fill="#f2effc">L</text>
+  <path d="M 79 27 Q 81.72 41.28 96 44 Q 81.72 46.72 79 61 Q 76.28 46.72 62 44 Q 76.28 41.28 79 27 Z" fill="url(#g_lux_t)"/>
+  <path d="M 97 60 Q 98.28 66.72 105 68 Q 98.28 69.28 97 76 Q 95.72 69.28 89 68 Q 95.72 66.72 97 60 Z" fill="#7c5cff"/>
+</svg>
