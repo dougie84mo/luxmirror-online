@@ -176,14 +176,36 @@ Both stores additionally need, and these already exist:
 Settings → Business → Branding. Drives Checkout, the Customer Portal, receipts,
 and Connect onboarding for every salon.
 
-| Slot | Spec |
-|---|---|
-| Icon | Square, ≥128×128, JPG/PNG |
-| Logo | ≥128×128, shown on Checkout |
-| Brand colour | `#7c5cff` |
-| Accent colour | `#0b0d12` |
+| Slot | Spec | State |
+|---|---|---|
+| Icon | Square, ≥128×128, JPG/PNG | ✅ `app-icons/lux-512.png` |
+| Logo | ≥128×128, shown on Checkout | ⏸ deliberately empty — it renders on white invoices and every wordmark file we have is dark-ground. The icon covers all surfaces until the outlined SVG exists. |
+| Brand colour | `#7c5cff` | ✅ |
+| Accent colour | `#0b0d12` | ✅ |
 
-Same files as `public/brand/logo/lux-logomark-1024.png`.
+Set on **both** accounts, because they are separate brand records: the live
+account `acct_1LyTF6HvtOhLZSJq` (Lux Mirror LLC) and the sandbox
+`acct_1SxLNFQbfyFy29Ls` (Smart Mirror), where every test checkout actually
+runs. Drives Checkout, receipts, invoices, and the customer portal.
+
+### Connect surfaces
+
+Settings → Connect → Onboarding interface → Customize. A *separate* brand
+record from the one above, also set on both accounts:
+
+- **Copy platform branding: on** — pushes the LUX icon and name onto
+  connected accounts. Note the side effect the toggle warns about: it also
+  brands their invoices and receipts. That is correct for our model, where
+  the PaymentIntent sits on the platform account and LUX is the merchant on
+  those charges. Revisit if salons ever become merchant of record.
+- Onboarding accent `#7c5cff`, brand colour left white — onboarding is a
+  form, and a violet page ground would be unreadable.
+- Express Dashboard primary `#7C5CFF` (buttons follow it automatically);
+  secondary `#EBEEF1` and 4px radius left at Stripe's defaults.
+
+⚠ These colour fields want the leading `#`; the account-level branding
+fields do not. Omitting it fails validation with a message that scrolls the
+form and moves every field below it.
 
 ---
 
