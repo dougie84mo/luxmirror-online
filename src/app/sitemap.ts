@@ -19,6 +19,10 @@ const ROUTES: { path: string; priority: number; changeFrequency: MetadataRoute.S
   { path: "/about", priority: 0.6, changeFrequency: "monthly" },
   { path: "/faq", priority: 0.6, changeFrequency: "monthly" },
   { path: "/contact", priority: 0.4, changeFrequency: "yearly" },
+  // Low priority, but they must be indexable: both app stores require a
+  // publicly reachable privacy policy URL, and reviewers do fetch it.
+  { path: "/privacy", priority: 0.3, changeFrequency: "yearly" },
+  { path: "/terms", priority: 0.3, changeFrequency: "yearly" },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

@@ -36,7 +36,7 @@ export function Footer() {
           <div className="lg:col-span-1">
             <p className="display text-3xl">LUX</p>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
-              Smart mirrors for modern salons. Built in California.
+              Smart mirrors for modern salons. Built in Pennsylvania.
             </p>
           </div>
 
@@ -80,7 +80,7 @@ export function Footer() {
         </div>
 
         <div className="mt-12 flex flex-col items-start justify-between gap-4 border-t border-border pt-8 text-xs text-muted-foreground sm:flex-row sm:items-center">
-          <p>&copy; {year} LUX Mirror. All rights reserved.</p>
+          <p>&copy; {year} Lux Mirror LLC. All rights reserved.</p>
           <p className="font-mono uppercase tracking-[0.18em]">
             theluxmirror.com
           </p>

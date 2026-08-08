@@ -70,6 +70,7 @@ const ORGANIZATION_LD = {
       "@type": "Organization",
       "@id": `${SITE}/#organization`,
       name: "LUX Mirror",
+      legalName: "Lux Mirror LLC",
       url: SITE,
       description:
         "LUX builds the smart mirror for the modern salon — AR styling, gesture controls, and fleet management.",
